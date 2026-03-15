@@ -28,6 +28,7 @@ public class UserRepository {
         if(oldUser != null){
             oldUser.setUsername(user.getUsername());
             oldUser.setEmail(user.getEmail());
+            oldUser.setGymDays(user.getGymDays());
             return oldUser;
         }
         return null;
