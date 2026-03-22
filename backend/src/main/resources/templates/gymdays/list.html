@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gym Days List</title>
+</head>
+<body>
+<h1>Gym Days</h1>
+
+<a href="/gymdays/new">Create New Gym Day</a>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="gymDay : ${gymDays}">
+        <td th:text="${gymDay.id}"></td>
+        <td th:text="${gymDay.name}"></td>
+        <td>
+            <a th:href="@{/gymdays/edit/{id}(id=${gymDay.id})}">Edit</a> |
+            <a th:href="@{/gymdays/delete/{id}(id=${gymDay.id})}"
+               onclick="return confirm('Are you sure you want to delete this gym day?')">Delete</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

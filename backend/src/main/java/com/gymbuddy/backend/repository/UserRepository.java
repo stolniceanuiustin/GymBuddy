@@ -29,6 +29,9 @@ public class UserRepository {
             oldUser.setUsername(user.getUsername());
             oldUser.setEmail(user.getEmail());
             oldUser.setGymDays(user.getGymDays());
+            oldUser.setAge(user.getAge());
+            oldUser.setHeight(user.getHeight());
+            oldUser.setWeight(user.getWeight());
             return oldUser;
         }
         return null;

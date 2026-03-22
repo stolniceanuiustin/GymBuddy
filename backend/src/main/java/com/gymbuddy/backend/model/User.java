@@ -14,4 +14,7 @@ public class User {
     private String username;
     private String email;
     private List<GymDay> gymDays;
+    private Integer age;
+    private Float height;
+    private Float weight;
 }

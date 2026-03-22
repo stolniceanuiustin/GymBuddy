@@ -2,6 +2,7 @@ package com.gymbuddy.backend.service.impl;
 
 import com.gymbuddy.backend.model.GymDay;
 import com.gymbuddy.backend.repository.GymDayRepository;
+import com.gymbuddy.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -22,11 +23,13 @@ class GymDayServiceImplTest {
 
     @Mock
     private GymDayRepository gymDayRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        gymDayService = new GymDayServiceImpl(gymDayRepository);
+        gymDayService = new GymDayServiceImpl(gymDayRepository, userRepository);
     }
 
     @Test
