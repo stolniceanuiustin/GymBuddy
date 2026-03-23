@@ -31,7 +31,7 @@ public class GymDayController {
     }
 
     @PostMapping("/save")
-    public String saveOwner(@ModelAttribute GymDay gymDay) {
+    public String saveGymDay(@ModelAttribute GymDay gymDay) {
         gymDayService.addGymDay(gymDay);
         return "redirect:/gymdays";
     }
