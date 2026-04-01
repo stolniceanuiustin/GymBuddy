@@ -28,9 +28,8 @@ public class ExerciseRepository {
     public Exercise updateExercise(Exercise exercise){
         Exercise oldExercise = findById(exercise.getId());
         if(oldExercise != null){
-            oldExercise.setName(exercise.getName());
+            oldExercise.setExerciseType(exercise.getExerciseType());
             oldExercise.setSets(exercise.getSets());
-            // I don't update timeLogged here, to preserve the creation time. This is on porpouse
             return oldExercise;
         }
         return null;

@@ -31,7 +31,9 @@ public class GymDayRepository {
             oldGymDay.setDate(gymDay.getDate());
             oldGymDay.setName(gymDay.getName());
             oldGymDay.setUser(gymDay.getUser());
-            oldGymDay.setExercises(gymDay.getExercises());
+            oldGymDay.setNotes(gymDay.getNotes());
+            oldGymDay.setSleepQuality(gymDay.getSleepQuality());
+            oldGymDay.setEnergyLevel(gymDay.getEnergyLevel());
             return oldGymDay;
         }
         return null;

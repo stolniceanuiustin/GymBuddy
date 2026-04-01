@@ -28,6 +28,7 @@ public class UserRepository {
         if(oldUser != null){
             oldUser.setUsername(user.getUsername());
             oldUser.setEmail(user.getEmail());
+            oldUser.setRole(user.getRole());
             oldUser.setGymDays(user.getGymDays());
             oldUser.setAge(user.getAge());
             oldUser.setHeight(user.getHeight());

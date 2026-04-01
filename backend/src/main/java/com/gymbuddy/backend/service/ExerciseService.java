@@ -9,4 +9,5 @@ public interface ExerciseService {
     Exercise getExerciseById(Long id);
     Exercise updateExercise(Exercise exercise);
     void deleteExercise(Long id);
-}
+    void addSetToExercise(Long exerciseId, Long setId);
+    }

@@ -13,6 +13,7 @@ public class User {
     private Long id;
     private String username;
     private String email;
+    private Role role;
     private List<GymDay> gymDays;
     private Integer age;
     private Float height;

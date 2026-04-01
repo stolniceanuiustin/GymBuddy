@@ -1,12 +1,15 @@
 package com.gymbuddy.backend.service.impl;
 
+import com.gymbuddy.backend.model.Exercise;
 import com.gymbuddy.backend.model.GymDay;
 import com.gymbuddy.backend.model.User;
+import com.gymbuddy.backend.repository.ExerciseRepository;
 import com.gymbuddy.backend.repository.GymDayRepository;
 import com.gymbuddy.backend.repository.UserRepository;
 import com.gymbuddy.backend.service.GymDayService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -15,10 +18,12 @@ public class GymDayServiceImpl implements GymDayService {
 
     private final GymDayRepository gymDayRepository;
     private final UserRepository userRepository;
+    private final ExerciseRepository exerciseRepository;
 
-    public GymDayServiceImpl(GymDayRepository gymDayRepository, UserRepository userRepository) {
+    public GymDayServiceImpl(GymDayRepository gymDayRepository, UserRepository userRepository, ExerciseRepository exerciseRepository) {
         this.gymDayRepository = gymDayRepository;
         this.userRepository = userRepository;
+        this.exerciseRepository = exerciseRepository;
     }
 
     @Override
@@ -60,4 +65,16 @@ public class GymDayServiceImpl implements GymDayService {
     public void deleteGymDay(Long id) {
         gymDayRepository.deleteById(id);
     }
-}
+
+    @Override
+    public void addExerciseToGymDay(Long gymDayId, Long exerciseId) {
+        GymDay gymDay = getGymDayById(gymDayId);
+        Exercise exercise = exerciseRepository.findById(exerciseId);
+        if (exercise != null) {
+            if (gymDay.getExercises() == null) {
+                gymDay.setExercises(new ArrayList<>());
+            }
+            gymDay.getExercises().add(exercise);
+        }
+    }
+    }

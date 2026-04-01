@@ -2,15 +2,13 @@ package com.gymbuddy.backend.controller;
 
 import com.gymbuddy.backend.model.GymDay;
 import com.gymbuddy.backend.service.GymDayService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Controller
-@RequestMapping("/gymdays")
+@RestController
+@RequestMapping("/api/gymdays")
 public class GymDayController {
     private final GymDayService gymDayService;
 
@@ -18,38 +16,28 @@ public class GymDayController {
         this.gymDayService = gymDayService;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "redirect:/gymdays";
-    }
-
     @GetMapping("")
-    public String showGymDays(Model model) {
-        List<GymDay> gymDays = gymDayService.getAllGymDays();
-        model.addAttribute("gymDays", gymDays);
-        return "gymdays/list-gymdays";
+    public List<GymDay> getAllGymDays() {
+        return gymDayService.getAllGymDays();
     }
 
-    @PostMapping("/save")
-    public String saveGymDay(@ModelAttribute GymDay gymDay) {
-        gymDayService.addGymDay(gymDay);
-        return "redirect:/gymdays";
+    @PostMapping("")
+    public GymDay saveGymDay(@RequestBody GymDay gymDay) {
+        return gymDayService.addGymDay(gymDay);
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model){
-        try{
-            GymDay gymDay = gymDayService.getGymDayById(id);
-            model.addAttribute("gymDay", gymDay);
-            return "gymdays/edit-gymday";
-        } catch (NoSuchElementException e) {
-            return "redirect:/gymdays";
-        }
+    @GetMapping("/{id}")
+    public GymDay getGymDay(@PathVariable Long id){
+        return gymDayService.getGymDayById(id);
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteGymDay(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public void deleteGymDay(@PathVariable Long id) {
         gymDayService.deleteGymDay(id);
-        return "redirect:/gymdays";
+    }
+
+    @PostMapping("/{gymDayId}/exercises/{exerciseId}")
+    public void addExerciseToGymDay(@PathVariable Long gymDayId, @PathVariable Long exerciseId) {
+        gymDayService.addExerciseToGymDay(gymDayId, exerciseId);
     }
 }

@@ -13,6 +13,6 @@ public class ExerciseSet {
     private Long id;
     private int setNumber;
     private int reps;
-    private double weight;
+    private Double weight;
     private LocalTime timeLogged = LocalTime.now();
 }

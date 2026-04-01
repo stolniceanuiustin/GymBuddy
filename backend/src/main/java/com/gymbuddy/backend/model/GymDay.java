@@ -17,5 +17,7 @@ public class GymDay {
     private String name;
     private User user;
     private List<Exercise> exercises;
-
+    private String notes;
+    private Integer sleepQuality;
+    private Integer energyLevel;
 }

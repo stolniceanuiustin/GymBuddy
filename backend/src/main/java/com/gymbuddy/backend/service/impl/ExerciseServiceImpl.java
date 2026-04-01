@@ -1,10 +1,13 @@
 package com.gymbuddy.backend.service.impl;
 
 import com.gymbuddy.backend.model.Exercise;
+import com.gymbuddy.backend.model.ExerciseSet;
 import com.gymbuddy.backend.repository.ExerciseRepository;
+import com.gymbuddy.backend.repository.ExerciseSetRepository;
 import com.gymbuddy.backend.service.ExerciseService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -12,9 +15,11 @@ import java.util.NoSuchElementException;
 public class ExerciseServiceImpl implements ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
+    private final ExerciseSetRepository exerciseSetRepository;
 
-    public ExerciseServiceImpl(ExerciseRepository exerciseRepository) {
+    public ExerciseServiceImpl(ExerciseRepository exerciseRepository, ExerciseSetRepository exerciseSetRepository) {
         this.exerciseRepository = exerciseRepository;
+        this.exerciseSetRepository = exerciseSetRepository;
     }
 
     @Override
@@ -44,5 +49,17 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public void deleteExercise(Long id) {
         exerciseRepository.deleteById(id);
+    }
+
+    @Override
+    public void addSetToExercise(Long exerciseId, Long setId) {
+        Exercise exercise = getExerciseById(exerciseId);
+        ExerciseSet set = exerciseSetRepository.findById(setId);
+        if (set != null) {
+            if (exercise.getSets() == null) {
+                exercise.setSets(new ArrayList<>());
+            }
+            exercise.getSets().add(set);
+        }
     }
 }

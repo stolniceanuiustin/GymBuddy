@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 public class Exercise {
     private Long id;
-    private String name;
+    private ExerciseType exerciseType;
     private LocalTime timeLogged = LocalTime.now();
     private List<ExerciseSet> sets;
 }

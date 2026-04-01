@@ -1,6 +1,7 @@
 package com.gymbuddy.backend.service.impl;
 
 import com.gymbuddy.backend.model.GymDay;
+import com.gymbuddy.backend.repository.ExerciseRepository;
 import com.gymbuddy.backend.repository.GymDayRepository;
 import com.gymbuddy.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 class GymDayServiceImplTest {
     private static final String GYM_DAY_NAME = "Push Day";
-    private GymDay gymDay = new GymDay(1L, LocalDate.now(), GYM_DAY_NAME, null, null);
+    private GymDay gymDay = GymDay.builder()
+            .id(1L)
+            .date(LocalDate.now())
+            .name(GYM_DAY_NAME)
+            .build();
 
     //UUT = Unit Under Testing
     private GymDayServiceImpl gymDayService;
@@ -25,11 +30,13 @@ class GymDayServiceImplTest {
     private GymDayRepository gymDayRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ExerciseRepository exerciseRepository;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        gymDayService = new GymDayServiceImpl(gymDayRepository, userRepository);
+        gymDayService = new GymDayServiceImpl(gymDayRepository, userRepository, exerciseRepository);
     }
 
     @Test
@@ -59,7 +66,11 @@ class GymDayServiceImplTest {
     void givenValidGymDay_whenUpdateGymDay_thenReturnUpdatedGymDay() {
         // given
         when(gymDayRepository.findById(1L)).thenReturn(gymDay);
-        GymDay updatedGymDay = new GymDay(1L, LocalDate.now(), "Pull Day", null, null);
+        GymDay updatedGymDay = GymDay.builder()
+                .id(1L)
+                .date(LocalDate.now())
+                .name("Pull Day")
+                .build();
         when(gymDayRepository.updateGymDay(any(GymDay.class))).thenReturn(updatedGymDay);
 
         // when

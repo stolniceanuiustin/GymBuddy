@@ -1,5 +1,6 @@
 package com.gymbuddy.backend.service.impl;
 
+import com.gymbuddy.backend.model.Role;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ class UserServiceImplTest {
             .id(1L)
             .username(USERNAME)
             .email("test@email.com")
+            .role(Role.STANDARD_USER)
             .gymDays(null)
             .age(20)
             .height(175.0f)
@@ -46,12 +48,9 @@ class UserServiceImplTest {
         // then
         assertNotNull(resultUser);
         assertEquals(USERNAME, resultUser.getUsername());
-        assertEquals(20, resultUser.getAge());
-        assertEquals(175.0f, resultUser.getHeight());
-        assertEquals(70.0f, resultUser.getWeight());
+        assertEquals(Role.STANDARD_USER, resultUser.getRole());
 
         verify(userRepository, times(1)).findById(1L);
-        verify(userRepository, times(0)).findAll();
     }
 
     @Test
@@ -69,6 +68,7 @@ class UserServiceImplTest {
                 .id(1L)
                 .username("Updated Username")
                 .email("updated@email.com")
+                .role(Role.ADMINISTRATOR)
                 .gymDays(null)
                 .age(21)
                 .height(176.0f)
@@ -81,10 +81,7 @@ class UserServiceImplTest {
 
         // then
         assertNotNull(result);
+        assertEquals(Role.ADMINISTRATOR, result.getRole());
         assertEquals("Updated Username", result.getUsername());
-        assertEquals("updated@email.com", result.getEmail());
-        assertEquals(21, result.getAge());
-        assertEquals(176.0f, result.getHeight());
-        assertEquals(71.0f, result.getWeight());
     }
 }

@@ -10,4 +10,5 @@ public interface GymDayService {
     GymDay getGymDayById(Long id);
     GymDay updateGymDay(GymDay gymDay);
     void deleteGymDay(Long id);
+    void addExerciseToGymDay(Long gymDayId, Long exerciseId);
 }
