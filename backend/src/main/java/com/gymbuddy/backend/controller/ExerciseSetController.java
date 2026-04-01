@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/exercisesets")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ExerciseSetController {
     private final ExerciseSetService exerciseSetService;
 

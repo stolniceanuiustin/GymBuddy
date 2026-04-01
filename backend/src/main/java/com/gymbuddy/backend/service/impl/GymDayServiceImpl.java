@@ -57,6 +57,11 @@ public class GymDayServiceImpl implements GymDayService {
     }
 
     @Override
+    public List<GymDay> getGymDaysByUserId(Long userId) {
+        return gymDayRepository.findByUserId(userId);
+    }
+
+    @Override
     public GymDay updateGymDay(GymDay gymDay) {
         return gymDayRepository.updateGymDay(gymDay);
     }

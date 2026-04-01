@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/gymdays")
+@CrossOrigin(origins = "http://localhost:5173")
 public class GymDayController {
     private final GymDayService gymDayService;
 
@@ -19,6 +20,11 @@ public class GymDayController {
     @GetMapping("")
     public List<GymDay> getAllGymDays() {
         return gymDayService.getAllGymDays();
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<GymDay> getGymDaysByUser(@PathVariable Long userId) {
+        return gymDayService.getGymDaysByUserId(userId);
     }
 
     @PostMapping("")

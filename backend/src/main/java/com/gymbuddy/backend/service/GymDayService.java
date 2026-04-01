@@ -9,6 +9,7 @@ public interface GymDayService {
     List<GymDay> getAllGymDays();
     GymDay getGymDayById(Long id);
     GymDay updateGymDay(GymDay gymDay);
+    List<GymDay> getGymDaysByUserId(Long userId);
     void deleteGymDay(Long id);
     void addExerciseToGymDay(Long gymDayId, Long exerciseId);
 }

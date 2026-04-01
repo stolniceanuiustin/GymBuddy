@@ -14,5 +14,6 @@ public class ExerciseSet {
     private int setNumber;
     private int reps;
     private Double weight;
+    @Builder.Default
     private LocalTime timeLogged = LocalTime.now();
 }

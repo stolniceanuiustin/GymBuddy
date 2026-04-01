@@ -25,6 +25,12 @@ public class GymDayRepository {
                 findFirst().orElse(null);
     }
 
+    public List<GymDay> findByUserId(Long userId) {
+        return gymDays.stream()
+                .filter(gd -> gd.getUser() != null && gd.getUser().getId().equals(userId))
+                .toList();
+    }
+
     public GymDay updateGymDay(GymDay gymDay){
         GymDay oldGymDay = findById(gymDay.getId());
         if(oldGymDay != null){

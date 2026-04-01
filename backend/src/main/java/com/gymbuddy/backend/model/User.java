@@ -1,5 +1,6 @@
 package com.gymbuddy.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public class User {
     private String username;
     private String email;
     private Role role;
+    @JsonIgnore
     private List<GymDay> gymDays;
     private Integer age;
     private Float height;
