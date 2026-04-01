@@ -1,1 +1,1 @@
-#README
+### GYMBUDDY - Gym Tracker in React and Spring 
