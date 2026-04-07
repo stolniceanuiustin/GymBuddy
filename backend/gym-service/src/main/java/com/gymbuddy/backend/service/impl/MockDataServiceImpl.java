@@ -53,30 +53,23 @@ public class MockDataServiceImpl implements MockDataService {
             catalog.add(exerciseTypeRepository.save(type));
         }
 
-        // Create Admin User
-        User admin = User.builder()
-                .id(1L)
-                .username("admin")
-                .email("admin@gymbuddy.com")
-                .password("password123")
-                .role(Role.ADMINISTRATOR)
-                .gymDays(new ArrayList<>())
-                .build();
-        userRepository.save(admin);
-
-        // Create Standard User
-        User mockUser = User.builder()
-                .id(2L)
-                .username("gym_pro")
-                .email("pro@gymbuddy.com")
-                .password("password123")
-                .role(Role.STANDARD_USER)
-                .gymDays(new ArrayList<>())
-                .age(25)
-                .height(180.5f)
-                .weight(85.0f)
-                .build();
-        userRepository.save(mockUser);
+        // Get existing users from repository (already initialized in constructor)
+        User mockUser = userRepository.findById(2L);
+        if (mockUser == null) {
+            // Fallback if not found for some reason, though constructor should have it
+            mockUser = User.builder()
+                    .id(2L)
+                    .username("gym_pro")
+                    .email("pro@gymbuddy.com")
+                    .password("password123")
+                    .role(Role.STANDARD_USER)
+                    .gymDays(new ArrayList<>())
+                    .age(25)
+                    .height(180.5f)
+                    .weight(85.0f)
+                    .build();
+            userRepository.save(mockUser);
+        }
 
         for (int i = 1; i <= 5; i++) {
             GymDay gymDay = GymDay.builder()
