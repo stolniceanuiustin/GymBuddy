@@ -6,6 +6,7 @@ import com.gymbuddy.backend.service.MockDataService;
 import jakarta.annotation.PostConstruct;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,12 +37,25 @@ public class MockDataServiceImpl implements MockDataService {
     }
 
     @PostConstruct
+    @Transactional
     public void init() {
-        generateMockData();
+        if (userRepository.count() == 0) {
+            generateMockData();
+        }
     }
 
     @Override
+    @Transactional
     public void generateMockData() {
+        // Create Admin User
+        User admin = User.builder()
+                .username("admin")
+                .email("admin@gymbuddy.com")
+                .password("password123")
+                .role(Role.ADMINISTRATOR)
+                .build();
+        userRepository.save(admin);
+
         // Create Exercise Catalog
         String[] exerciseNames = {"Bench Press", "Squat", "Deadlift", "Pull Ups", "Bicep Curls", "Overhead Press"};
         List<ExerciseType> catalog = new ArrayList<>();
@@ -53,27 +67,20 @@ public class MockDataServiceImpl implements MockDataService {
             catalog.add(exerciseTypeRepository.save(type));
         }
 
-        // Get existing users from repository (already initialized in constructor)
-        User mockUser = userRepository.findById(2L);
-        if (mockUser == null) {
-            // Fallback if not found for some reason, though constructor should have it
-            mockUser = User.builder()
-                    .id(2L)
-                    .username("gym_pro")
-                    .email("pro@gymbuddy.com")
-                    .password("password123")
-                    .role(Role.STANDARD_USER)
-                    .gymDays(new ArrayList<>())
-                    .age(25)
-                    .height(180.5f)
-                    .weight(85.0f)
-                    .build();
-            userRepository.save(mockUser);
-        }
+        // Create Gym Pro User
+        User mockUser = User.builder()
+                .username("gym_pro")
+                .email("pro@gymbuddy.com")
+                .password("password123")
+                .role(Role.STANDARD_USER)
+                .age(25)
+                .height(180.5f)
+                .weight(85.0f)
+                .build();
+        userRepository.save(mockUser);
 
         for (int i = 1; i <= 5; i++) {
             GymDay gymDay = GymDay.builder()
-                    .id((long) i)
                     .date(LocalDate.now().minusDays(i))
                     .name("Workout " + i)
                     .user(mockUser)
@@ -87,7 +94,6 @@ public class MockDataServiceImpl implements MockDataService {
             for (int j = 1; j <= numExercises; j++) {
                 ExerciseType randomType = catalog.get(random.nextInt(catalog.size()));
                 Exercise exercise = Exercise.builder()
-                        .id((long) (i * 10 + j))
                         .exerciseType(randomType)
                         .sets(new ArrayList<>())
                         .build();
@@ -96,7 +102,6 @@ public class MockDataServiceImpl implements MockDataService {
                 for (int k = 1; k <= numSets; k++) {
                     Double weight = (randomType.getName().equals("Pull Ups")) ? null : (double) (random.nextInt(10) * 5 + 40);
                     ExerciseSet set = ExerciseSet.builder()
-                            .id((long) (i * 100 + j * 10 + k))
                             .setNumber(k)
                             .reps(random.nextInt(5) + 8) // 8 to 12 reps
                             .weight(weight)
@@ -109,7 +114,6 @@ public class MockDataServiceImpl implements MockDataService {
                 gymDay.getExercises().add(exercise);
             }
             gymDayRepository.save(gymDay);
-            mockUser.getGymDays().add(gymDay);
         }
     }
 

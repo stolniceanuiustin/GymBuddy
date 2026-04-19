@@ -1,5 +1,6 @@
 package com.gymbuddy.backend.controller;
 
+import com.gymbuddy.backend.dto.RegisterRequest;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,17 @@ public class AuthController {
             return ResponseEntity.ok(user);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/register")
+    @Operation(summary = "Register a new user")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        try {
+            User user = authService.register(registerRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/forgot-password")

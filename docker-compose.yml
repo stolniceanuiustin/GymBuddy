@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:15
+    container_name: gymbuddy-db
+    environment:
+      POSTGRES_USER: gymuser
+      POSTGRES_PASSWORD: gympassword
+      POSTGRES_DB: gymbuddy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

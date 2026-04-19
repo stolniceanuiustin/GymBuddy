@@ -34,16 +34,16 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public Exercise getExerciseById(Long id) {
-        Exercise exercise = exerciseRepository.findById(id);
-        if (exercise != null) {
-            return exercise;
-        }
-        throw new NoSuchElementException("Exercise with id " + id + " not found");
+        return exerciseRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Exercise with id " + id + " not found"));
     }
 
     @Override
     public Exercise updateExercise(Exercise exercise) {
-        return exerciseRepository.updateExercise(exercise);
+        if (!exerciseRepository.existsById(exercise.getId())) {
+            throw new NoSuchElementException("Exercise with id " + exercise.getId() + " not found");
+        }
+        return exerciseRepository.save(exercise);
     }
 
     @Override
@@ -54,12 +54,13 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public void addSetToExercise(Long exerciseId, Long setId) {
         Exercise exercise = getExerciseById(exerciseId);
-        ExerciseSet set = exerciseSetRepository.findById(setId);
-        if (set != null) {
-            if (exercise.getSets() == null) {
-                exercise.setSets(new ArrayList<>());
-            }
-            exercise.getSets().add(set);
+        ExerciseSet set = exerciseSetRepository.findById(setId)
+                .orElseThrow(() -> new NoSuchElementException("ExerciseSet with id " + setId + " not found"));
+        
+        if (exercise.getSets() == null) {
+            exercise.setSets(new ArrayList<>());
         }
+        exercise.getSets().add(set);
+        exerciseRepository.save(exercise);
     }
 }

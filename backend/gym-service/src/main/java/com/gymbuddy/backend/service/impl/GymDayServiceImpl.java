@@ -34,12 +34,7 @@ public class GymDayServiceImpl implements GymDayService {
                 gymDay.setUser(users.get(0));
             }
         }
-        if (gymDay.getId() == null) {
-            gymDay.setId((long) (gymDayRepository.findAll().size() + 1));
-            return gymDayRepository.save(gymDay);
-        } else {
-            return gymDayRepository.updateGymDay(gymDay);
-        }
+        return gymDayRepository.save(gymDay);
     }
 
     @Override
@@ -49,11 +44,8 @@ public class GymDayServiceImpl implements GymDayService {
 
     @Override
     public GymDay getGymDayById(Long id) {
-        GymDay gymDay = gymDayRepository.findById(id);
-        if (gymDay != null) {
-            return gymDay;
-        }
-        throw new NoSuchElementException("GymDay with id " + id + " not found");
+        return gymDayRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("GymDay with id " + id + " not found"));
     }
 
     @Override
@@ -63,7 +55,10 @@ public class GymDayServiceImpl implements GymDayService {
 
     @Override
     public GymDay updateGymDay(GymDay gymDay) {
-        return gymDayRepository.updateGymDay(gymDay);
+        if (!gymDayRepository.existsById(gymDay.getId())) {
+            throw new NoSuchElementException("GymDay with id " + gymDay.getId() + " not found");
+        }
+        return gymDayRepository.save(gymDay);
     }
 
     @Override
@@ -74,12 +69,13 @@ public class GymDayServiceImpl implements GymDayService {
     @Override
     public void addExerciseToGymDay(Long gymDayId, Long exerciseId) {
         GymDay gymDay = getGymDayById(gymDayId);
-        Exercise exercise = exerciseRepository.findById(exerciseId);
-        if (exercise != null) {
-            if (gymDay.getExercises() == null) {
-                gymDay.setExercises(new ArrayList<>());
-            }
-            gymDay.getExercises().add(exercise);
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new NoSuchElementException("Exercise with id " + exerciseId + " not found"));
+        
+        if (gymDay.getExercises() == null) {
+            gymDay.setExercises(new ArrayList<>());
         }
+        gymDay.getExercises().add(exercise);
+        gymDayRepository.save(gymDay);
     }
-    }
+}

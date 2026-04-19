@@ -11,9 +11,6 @@ import java.util.NoSuchElementException;
 @Service
 public class UserServiceImpl implements UserService {
 
-    // this is what dependency injection is,
-    // the service is being "served" userRepository by Spring Boot in the background, so no constructor is needed here,
-    // kinda makes sense 
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -32,16 +29,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long id) {
-        User user = userRepository.findById(id);
-        if (user != null) {
-            return user;
-        }
-        throw new NoSuchElementException("User with id " + id + " not found");
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " not found"));
     }
 
     @Override
     public User updateUser(User user) {
-        return userRepository.updateUser(user);
+        if (!userRepository.existsById(user.getId())) {
+             throw new NoSuchElementException("User with id " + user.getId() + " not found");
+        }
+        return userRepository.save(user);
     }
 
     @Override

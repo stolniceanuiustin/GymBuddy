@@ -1,19 +1,22 @@
 package com.gymbuddy.backend.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
+@Table(name = "exercise_types")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Schema(description = "Exercise Type entity representing the category of an exercise")
 public class ExerciseType {
-    @Schema(description = "Unique identifier of the exercise type", example = "1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Schema(description = "Name of the exercise type", example = "Bench Press")
+    
+    @Column(unique = true, nullable = false)
     private String name;
-    @Schema(description = "Description of the exercise type", example = "A compound exercise for the chest")
+    
     private String description;
 }

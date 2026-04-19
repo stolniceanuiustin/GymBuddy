@@ -29,16 +29,16 @@ public class ExerciseTypeServiceImpl implements ExerciseTypeService {
 
     @Override
     public ExerciseType getExerciseTypeById(Long id) {
-        ExerciseType exerciseType = exerciseTypeRepository.findById(id);
-        if (exerciseType != null) {
-            return exerciseType;
-        }
-        throw new NoSuchElementException("ExerciseType with id " + id + " not found");
+        return exerciseTypeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("ExerciseType with id " + id + " not found"));
     }
 
     @Override
     public ExerciseType updateExerciseType(ExerciseType exerciseType) {
-        return exerciseTypeRepository.updateExerciseType(exerciseType);
+        if (!exerciseTypeRepository.existsById(exerciseType.getId())) {
+            throw new NoSuchElementException("ExerciseType with id " + exerciseType.getId() + " not found");
+        }
+        return exerciseTypeRepository.save(exerciseType);
     }
 
     @Override

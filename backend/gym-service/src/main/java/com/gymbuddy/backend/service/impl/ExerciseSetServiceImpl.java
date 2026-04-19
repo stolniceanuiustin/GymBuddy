@@ -29,16 +29,16 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
 
     @Override
     public ExerciseSet getExerciseSetById(Long id) {
-        ExerciseSet exerciseSet = exerciseSetRepository.findById(id);
-        if (exerciseSet != null) {
-            return exerciseSet;
-        }
-        throw new NoSuchElementException("ExerciseSet with id " + id + " not found");
+        return exerciseSetRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("ExerciseSet with id " + id + " not found"));
     }
 
     @Override
     public ExerciseSet updateExerciseSet(ExerciseSet exerciseSet) {
-        return exerciseSetRepository.updateExerciseSet(exerciseSet);
+        if (!exerciseSetRepository.existsById(exerciseSet.getId())) {
+            throw new NoSuchElementException("ExerciseSet with id " + exerciseSet.getId() + " not found");
+        }
+        return exerciseSetRepository.save(exerciseSet);
     }
 
     @Override

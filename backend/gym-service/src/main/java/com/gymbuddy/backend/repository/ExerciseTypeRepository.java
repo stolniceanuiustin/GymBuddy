@@ -1,45 +1,12 @@
 package com.gymbuddy.backend.repository;
 
 import com.gymbuddy.backend.model.ExerciseType;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class ExerciseTypeRepository {
-    private final List<ExerciseType> exerciseTypes = new ArrayList<>();
-
-    public ExerciseType save(ExerciseType exerciseType) {
-        if (exerciseType.getId() == null) {
-            exerciseType.setId((long) (exerciseTypes.size() + 1));
-        }
-        exerciseTypes.add(exerciseType);
-        return exerciseType;
-    }
-
-    public List<ExerciseType> findAll() {
-        return exerciseTypes;
-    }
-
-    public ExerciseType findById(Long id) {
-        return exerciseTypes.stream()
-                .filter(type -> type.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public ExerciseType updateExerciseType(ExerciseType exerciseType) {
-        ExerciseType oldType = findById(exerciseType.getId());
-        if (oldType != null) {
-            oldType.setName(exerciseType.getName());
-            oldType.setDescription(exerciseType.getDescription());
-            return oldType;
-        }
-        return null;
-    }
-
-    public boolean deleteById(Long id) {
-        return exerciseTypes.removeIf(type -> type.getId().equals(id));
-    }
+public interface ExerciseTypeRepository extends JpaRepository<ExerciseType, Long> {
+    Optional<ExerciseType> findByName(String name);
 }

@@ -1,5 +1,7 @@
 package com.gymbuddy.backend.service.impl;
 
+import com.gymbuddy.backend.dto.RegisterRequest;
+import com.gymbuddy.backend.model.Role;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.repository.UserRepository;
 import com.gymbuddy.backend.service.AuthService;
@@ -16,21 +18,36 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User login(String username, String password) {
-        User user = userRepository.findByUsername(username);
-        if (user != null && user.getPassword() != null && user.getPassword().equals(password)) {
-            return user;
+        return userRepository.findByUsername(username)
+                .filter(user -> user.getPassword() != null && user.getPassword().equals(password))
+                .orElse(null);
+    }
+
+    @Override
+    public User register(RegisterRequest registerRequest) {
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists");
         }
-        return null;
+        
+        User user = User.builder()
+                .username(registerRequest.getUsername())
+                .email(registerRequest.getEmail())
+                .password(registerRequest.getPassword())
+                .role(Role.STANDARD_USER)
+                .build();
+        
+        return userRepository.save(user);
     }
 
     @Override
     public boolean resetPassword(String username, String email, String newPassword) {
-        User user = userRepository.findByUsername(username);
-        if (user != null && user.getEmail() != null && user.getEmail().equalsIgnoreCase(email)) {
-            user.setPassword(newPassword);
-            userRepository.updateUser(user);
-            return true;
-        }
-        return false;
+        return userRepository.findByUsername(username)
+                .filter(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email))
+                .map(user -> {
+                    user.setPassword(newPassword);
+                    userRepository.save(user);
+                    return true;
+                })
+                .orElse(false);
     }
 }
