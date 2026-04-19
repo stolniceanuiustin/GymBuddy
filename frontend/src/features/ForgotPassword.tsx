@@ -10,7 +10,7 @@ import {
     Link,
     Alert,
 } from '@mui/material';
-import axios from 'axios';
+import axios from '../helper/axios';
 import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword: React.FC = () => {
@@ -27,7 +27,7 @@ const ForgotPassword: React.FC = () => {
         setMessage(null);
 
         try {
-            const response = await axios.post(`http://localhost:8082/api/auth/forgot-password`, null, {
+            const response = await axios.post(`/api/auth/forgot-password`, null, {
                 params: {
                     username: username,
                     email: email,

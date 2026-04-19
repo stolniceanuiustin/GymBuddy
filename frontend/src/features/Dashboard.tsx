@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom';
 import { Button, Box, Typography } from '@mui/material';
+import axios from '../helper/axios';
 
 interface ExerciseSet {
   id: number;
@@ -47,13 +48,9 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:8080/api/gymdays/user/${userId}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Could not fetch workouts");
-        return res.json();
-      })
-      .then(data => {
-        setWorkouts(data);
+    axios.get(`/api/gymdays/user/${userId}`)
+      .then(response => {
+        setWorkouts(response.data);
         setLoading(false);
       })
       .catch(err => {

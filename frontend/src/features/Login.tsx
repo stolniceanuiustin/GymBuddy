@@ -10,7 +10,7 @@ import {
     Link,
     Alert,
 } from '@mui/material';
-import axios from 'axios';
+import axios from '../helper/axios';
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
         setError(null);
 
         try {
-            const response = await axios.post(`http://localhost:8082/api/auth/login`, null, {
+            const response = await axios.post(`/api/auth/login`, null, {
                 params: {
                     username: username,
                     password: password
