@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gym Days Log</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .exercise-badge {
+            margin-right: 5px;
+        }
+        .sets-info {
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Gym Buddy</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/gymdays">My Workouts</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <button class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#gymDayModal" onclick="clearModal()">
+                        Log New Workout
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Gym Days Table -->
+    <table class="table table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Exercises</th>
+            <th class="text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="gymDay : ${gymDays}">
+            <td th:text="${gymDay.id}"></td>
+            <td th:text="${gymDay.date}"></td>
+            <td class="fw-bold" th:text="${gymDay.name}"></td>
+            <td>
+                <div th:each="ex : ${gymDay.exercises}" class="mb-1">
+                    <span class="badge bg-info text-dark exercise-badge" th:text="${ex.name}"></span>
+                    <span class="sets-info" th:text="${ex.sets.size() + ' sets'}"></span>
+                </div>
+                <span th:if="${gymDay.exercises == null || gymDay.exercises.empty}" class="text-muted italic">No exercises logged</span>
+            </td>
+            <td class="text-center">
+                <div class="btn-group">
+                    <button class="btn btn-warning btn-sm" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#gymDayModal" 
+                            th:attr="data-bs-id=${gymDay.id}, data-bs-name=${gymDay.name}, data-bs-date=${gymDay.date}"
+                            onclick="fillModalData(this)">
+                        Edit
+                    </button>
+                    <a class="btn btn-danger btn-sm"
+                       th:href="@{/gymdays/delete/{id}(id=${gymDay.id})}"
+                       onclick="return confirm('Are you sure you want to delete this workout log?')">Delete</a>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${gymDays.empty}">
+            <td colspan="5" class="text-center py-4 text-muted">No workouts found. Time to hit the gym!</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Include Modal Fragment -->
+<div th:replace="~{fragments/gymday-modal :: gymDayModal}"></div>
+
+<script>
+    function clearModal() {
+        document.getElementById("gymDayId").value = "";
+        document.getElementById("gymDayName").value = "";
+        document.getElementById("gymDayDate").value = new Date().toISOString().split('T')[0];
+        document.getElementById("modalTitle").textContent = "Log New Workout";
+    }
+
+    function fillModalData(button) {
+        const id = button.getAttribute("data-bs-id");
+        const name = button.getAttribute("data-bs-name");
+        const date = button.getAttribute("data-bs-date");
+
+        document.getElementById("gymDayId").value = id || "";
+        document.getElementById("gymDayName").value = name || "";
+        document.getElementById("gymDayDate").value = date || new Date().toISOString().split('T')[0];
+
+        document.getElementById("modalTitle").textContent = id ? "Edit Workout Log" : "Log New Workout";
+    }
+</script>
+
+</body>
+</html>
