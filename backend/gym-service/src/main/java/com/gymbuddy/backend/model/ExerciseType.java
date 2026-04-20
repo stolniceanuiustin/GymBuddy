@@ -19,4 +19,7 @@ public class ExerciseType {
     private String name;
     
     private String description;
+
+    @Column(name = "is_bodyweight")
+    private boolean bodyweight; // If true, users only track reps. If false, they track reps + weight.
 }

@@ -35,6 +35,7 @@ const Login: React.FC = () => {
                 const user = response.data;
                 localStorage.setItem('USER_ID', user.id.toString());
                 localStorage.setItem('USERNAME', user.username);
+                localStorage.setItem('ROLE', user.role);
                 navigate('/dashboard');
             }
         } catch (err: any) {

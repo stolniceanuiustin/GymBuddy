@@ -23,17 +23,20 @@ public class MockDataServiceImpl implements MockDataService {
     private final ExerciseRepository exerciseRepository;
     private final ExerciseSetRepository exerciseSetRepository;
     private final ExerciseTypeRepository exerciseTypeRepository;
+    private final WeightLogRepository weightLogRepository;
 
     public MockDataServiceImpl(UserRepository userRepository,
                                GymDayRepository gymDayRepository,
                                ExerciseRepository exerciseRepository,
                                ExerciseSetRepository exerciseSetRepository,
-                               ExerciseTypeRepository exerciseTypeRepository) {
+                               ExerciseTypeRepository exerciseTypeRepository,
+                               WeightLogRepository weightLogRepository) {
         this.userRepository = userRepository;
         this.gymDayRepository = gymDayRepository;
         this.exerciseRepository = exerciseRepository;
         this.exerciseSetRepository = exerciseSetRepository;
         this.exerciseTypeRepository = exerciseTypeRepository;
+        this.weightLogRepository = weightLogRepository;
     }
 
     @PostConstruct
@@ -57,15 +60,15 @@ public class MockDataServiceImpl implements MockDataService {
         userRepository.save(admin);
 
         // Create Exercise Catalog
-        String[] exerciseNames = {"Bench Press", "Squat", "Deadlift", "Pull Ups", "Bicep Curls", "Overhead Press"};
         List<ExerciseType> catalog = new ArrayList<>();
-        for (String name : exerciseNames) {
-            ExerciseType type = ExerciseType.builder()
-                    .name(name)
-                    .description("Description for " + name)
-                    .build();
-            catalog.add(exerciseTypeRepository.save(type));
-        }
+        catalog.add(exerciseTypeRepository.save(ExerciseType.builder()
+                .name("Bench Press").bodyweight(false).description("Chest exercise with weights").build()));
+        catalog.add(exerciseTypeRepository.save(ExerciseType.builder()
+                .name("Squat").bodyweight(false).description("Leg exercise with weights").build()));
+        catalog.add(exerciseTypeRepository.save(ExerciseType.builder()
+                .name("Pull Ups").bodyweight(true).description("Bodyweight back exercise").build()));
+        catalog.add(exerciseTypeRepository.save(ExerciseType.builder()
+                .name("Push Ups").bodyweight(true).description("Bodyweight chest exercise").build()));
 
         // Create Gym Pro User
         User mockUser = User.builder()
@@ -78,6 +81,17 @@ public class MockDataServiceImpl implements MockDataService {
                 .weight(85.0f)
                 .build();
         userRepository.save(mockUser);
+
+        // Generate 30 days of weight data for mockUser
+        float startingWeight = 90.0f;
+        for (int i = 30; i >= 0; i--) {
+            startingWeight -= (random.nextFloat() * 0.2f); // slight trend down
+            weightLogRepository.save(WeightLog.builder()
+                    .date(LocalDate.now().minusDays(i))
+                    .weight(startingWeight + (random.nextFloat() * 0.5f)) // add some noise
+                    .user(mockUser)
+                    .build());
+        }
 
         for (int i = 1; i <= 5; i++) {
             GymDay gymDay = GymDay.builder()
@@ -100,7 +114,7 @@ public class MockDataServiceImpl implements MockDataService {
 
                 int numSets = random.nextInt(3) + 3; // 3 to 5 sets
                 for (int k = 1; k <= numSets; k++) {
-                    Double weight = (randomType.getName().equals("Pull Ups")) ? null : (double) (random.nextInt(10) * 5 + 40);
+                    Double weight = (randomType.isBodyweight()) ? null : (double) (random.nextInt(10) * 5 + 40);
                     ExerciseSet set = ExerciseSet.builder()
                             .setNumber(k)
                             .reps(random.nextInt(5) + 8) // 8 to 12 reps

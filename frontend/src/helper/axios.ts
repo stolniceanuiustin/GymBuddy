@@ -18,9 +18,15 @@ const axiosInstance = axios.create({
     }
 });
 
-// Update baseURL on each request in case the path changed
+// Update baseURL and headers on each request
 axiosInstance.interceptors.request.use((config) => {
     config.baseURL = getBaseURL();
+    
+    const userId = localStorage.getItem('USER_ID');
+    if (userId) {
+        config.headers['X-User-Id'] = userId;
+    }
+    
     return config;
 });
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom';
-import { Button, Box, Typography } from '@mui/material';
+import { Button, Box, Typography, Stack } from '@mui/material';
 import axios from '../helper/axios';
 
 interface ExerciseSet {
@@ -41,6 +41,7 @@ const Dashboard: React.FC = () => {
 
   const userId = localStorage.getItem('USER_ID');
   const username = localStorage.getItem('USERNAME');
+  const role = localStorage.getItem('ROLE');
 
   useEffect(() => {
     if (!userId) {
@@ -93,6 +94,7 @@ const Dashboard: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('USER_ID');
     localStorage.removeItem('USERNAME');
+    localStorage.removeItem('ROLE');
     navigate('/login');
   };
 
@@ -104,6 +106,15 @@ const Dashboard: React.FC = () => {
         <Typography variant="h3">GymBuddy - Fitness Explorer</Typography>
         <Box display="flex" alignItems="center" gap={2}>
             <Typography variant="h6">Welcome, {username}!</Typography>
+            <Stack direction="row" spacing={2}>
+                <Button variant="contained" color="info" onClick={() => navigate('/health')}>Health Dashboard</Button>
+                {role === 'ADMINISTRATOR' && (
+                  <>
+                    <Button variant="contained" color="secondary" onClick={() => navigate('/admin-users')}>User Management</Button>
+                    <Button variant="contained" color="success" onClick={() => navigate('/admin-exercises')}>Exercise Catalog</Button>
+                  </>
+                )}
+            </Stack>
             <Button variant="outlined" color="error" onClick={handleLogout}>Logout</Button>
         </Box>
       </Box>
