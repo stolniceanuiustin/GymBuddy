@@ -9,3 +9,28 @@
 How to start:
 to start the database
 docker compose up -d 
+
+
+Note
+
+A1: 5
+
+A2: 7,5
+
+A3: 
+
+P1: 9,5
+
+P2: 9
+
+P3: 
+
+P Implementation: 
+
+P Final Design: 
+
+---------------------------------------
+
+Nota Lab 1: 
+
+Nota Lab 2: 
