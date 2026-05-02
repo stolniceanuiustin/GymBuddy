@@ -1,12 +1,12 @@
 package com.gymbuddy.backend.service;
 
-import com.gymbuddy.backend.model.ExerciseType;
+import com.gymbuddy.backend.dto.ExerciseTypeDTO;
 import java.util.List;
 
 public interface ExerciseTypeService {
-    ExerciseType addExerciseType(ExerciseType exerciseType);
-    List<ExerciseType> getAllExerciseTypes();
-    ExerciseType getExerciseTypeById(Long id);
-    ExerciseType updateExerciseType(ExerciseType exerciseType);
+    ExerciseTypeDTO addExerciseType(ExerciseTypeDTO exerciseTypeDTO);
+    List<ExerciseTypeDTO> getAllExerciseTypes();
+    ExerciseTypeDTO getExerciseTypeById(Long id);
+    ExerciseTypeDTO updateExerciseType(ExerciseTypeDTO exerciseTypeDTO);
     void deleteExerciseType(Long id);
 }

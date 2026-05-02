@@ -1,13 +1,12 @@
 package com.gymbuddy.backend.controller;
 
-import com.gymbuddy.backend.model.GymDay;
+import com.gymbuddy.backend.dto.GymDayDTO;
 import com.gymbuddy.backend.service.GymDayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/gymdays")
@@ -22,25 +21,25 @@ public class GymDayController {
 
     @GetMapping("")
     @Operation(summary = "Get all gym days")
-    public List<GymDay> getAllGymDays() {
+    public List<GymDayDTO> getAllGymDays() {
         return gymDayService.getAllGymDays();
     }
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Get gym days by user ID")
-    public List<GymDay> getGymDaysByUser(@PathVariable Long userId) {
+    public List<GymDayDTO> getGymDaysByUser(@PathVariable Long userId) {
         return gymDayService.getGymDaysByUserId(userId);
     }
 
     @PostMapping("")
     @Operation(summary = "Save a gym day")
-    public GymDay saveGymDay(@RequestBody GymDay gymDay) {
-        return gymDayService.addGymDay(gymDay);
+    public GymDayDTO saveGymDay(@RequestBody GymDayDTO gymDayDTO) {
+        return gymDayService.addGymDay(gymDayDTO);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a gym day by ID")
-    public GymDay getGymDay(@PathVariable Long id){
+    public GymDayDTO getGymDay(@PathVariable Long id){
         return gymDayService.getGymDayById(id);
     }
 

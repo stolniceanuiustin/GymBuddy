@@ -1,6 +1,6 @@
 package com.gymbuddy.backend.controller;
 
-import com.gymbuddy.backend.model.ExerciseSet;
+import com.gymbuddy.backend.dto.ExerciseSetDTO;
 import com.gymbuddy.backend.service.ExerciseSetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,19 +21,19 @@ public class ExerciseSetController {
 
     @GetMapping("")
     @Operation(summary = "Get all exercise sets")
-    public List<ExerciseSet> getAllExerciseSets() {
+    public List<ExerciseSetDTO> getAllExerciseSets() {
         return exerciseSetService.getAllExerciseSets();
     }
 
     @PostMapping("")
     @Operation(summary = "Add a new exercise set")
-    public ExerciseSet addExerciseSet(@RequestBody ExerciseSet exerciseSet) {
-        return exerciseSetService.addExerciseSet(exerciseSet);
+    public ExerciseSetDTO addExerciseSet(@RequestBody ExerciseSetDTO exerciseSetDTO) {
+        return exerciseSetService.addExerciseSet(exerciseSetDTO);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get an exercise set by ID")
-    public ExerciseSet getExerciseSetById(@PathVariable Long id) {
+    public ExerciseSetDTO getExerciseSetById(@PathVariable Long id) {
         return exerciseSetService.getExerciseSetById(id);
     }
 

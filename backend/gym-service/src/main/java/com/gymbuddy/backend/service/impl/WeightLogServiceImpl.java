@@ -1,5 +1,7 @@
 package com.gymbuddy.backend.service.impl;
 
+import com.gymbuddy.backend.exception.ResourceNotFoundException;
+import com.gymbuddy.backend.exception.ValidationException;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.model.WeightLog;
 import com.gymbuddy.backend.repository.UserRepository;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class WeightLogServiceImpl implements WeightLogService {
@@ -29,8 +30,12 @@ public class WeightLogServiceImpl implements WeightLogService {
 
     @Override
     public WeightLog addWeightLog(Long userId, Float weight) {
+        if (weight != null && (weight <= 0 || weight > 500)) {
+            throw new ValidationException("Weight must be between 0 and 500 kg");
+        }
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         
         WeightLog log = WeightLog.builder()
                 .date(LocalDate.now())
@@ -43,6 +48,9 @@ public class WeightLogServiceImpl implements WeightLogService {
 
     @Override
     public void deleteWeightLog(Long id) {
+        if (!weightLogRepository.existsById(id)) {
+            throw new ResourceNotFoundException("WeightLog", "id", id);
+        }
         weightLogRepository.deleteById(id);
     }
 }

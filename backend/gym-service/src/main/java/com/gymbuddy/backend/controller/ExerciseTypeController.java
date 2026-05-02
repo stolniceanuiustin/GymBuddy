@@ -1,6 +1,6 @@
 package com.gymbuddy.backend.controller;
 
-import com.gymbuddy.backend.model.ExerciseType;
+import com.gymbuddy.backend.dto.ExerciseTypeDTO;
 import com.gymbuddy.backend.security.SecurityUtils;
 import com.gymbuddy.backend.service.ExerciseTypeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,38 +26,38 @@ public class ExerciseTypeController {
 
     @PostMapping("")
     @Operation(summary = "Add a new exercise type (Admin Only)")
-    public ResponseEntity<?> addExerciseType(@RequestBody ExerciseType exerciseType, @RequestHeader(value = "X-User-Id", required = false) Long requestorId) {
+    public ResponseEntity<?> addExerciseType(@RequestBody ExerciseTypeDTO exerciseTypeDTO, @RequestHeader(value = "X-User-Id", required = false) Long requestorId) {
         if (!securityUtils.isAdministrator(requestorId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Administrator role required.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(exerciseTypeService.addExerciseType(exerciseType));
+        return ResponseEntity.status(HttpStatus.CREATED).body(exerciseTypeService.addExerciseType(exerciseTypeDTO));
     }
 
     @GetMapping("")
     @Operation(summary = "Get all exercise types")
-    public List<ExerciseType> getAllExerciseTypes() {
+    public List<ExerciseTypeDTO> getAllExerciseTypes() {
         return exerciseTypeService.getAllExerciseTypes();
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get an exercise type by ID")
-    public ExerciseType getExerciseTypeById(@PathVariable Long id) {
+    public ExerciseTypeDTO getExerciseTypeById(@PathVariable Long id) {
         return exerciseTypeService.getExerciseTypeById(id);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an exercise type (Admin Only)")
-    public ResponseEntity<?> updateExerciseType(@PathVariable Long id, @RequestBody ExerciseType exerciseType, @RequestHeader(value = "X-User-Id", required = false) Long requestorId) {
+    public ResponseEntity<?> updateExerciseType(@PathVariable Long id, @RequestBody ExerciseTypeDTO exerciseTypeDTO, @RequestHeader(value = "X-User-Id", required = false) Long requestorId) {
         if (!securityUtils.isAdministrator(requestorId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Administrator role required.");
         }
-        exerciseType.setId(id);
-        return ResponseEntity.ok(exerciseTypeService.updateExerciseType(exerciseType));
+        exerciseTypeDTO.setId(id);
+        return ResponseEntity.ok(exerciseTypeService.updateExerciseType(exerciseTypeDTO));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an exercise type (Admin Only)")
-    public ResponseEntity<?> deleteExerciseType(@PathVariable Long id, @RequestHeader(value = "X-User-Id", required = false) Long requestorId) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id, @RequestHeader(value = "X-User-Id", required = false) Long requestorId) {
         if (!securityUtils.isAdministrator(requestorId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Administrator role required.");
         }

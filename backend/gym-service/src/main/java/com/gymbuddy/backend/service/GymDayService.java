@@ -1,15 +1,15 @@
 package com.gymbuddy.backend.service;
 
-import com.gymbuddy.backend.model.GymDay;
+import com.gymbuddy.backend.dto.GymDayDTO;
 
 import java.util.List;
 
 public interface GymDayService {
-    GymDay addGymDay(GymDay gymDay);
-    List<GymDay> getAllGymDays();
-    GymDay getGymDayById(Long id);
-    GymDay updateGymDay(GymDay gymDay);
-    List<GymDay> getGymDaysByUserId(Long userId);
+    GymDayDTO addGymDay(GymDayDTO gymDayDTO);
+    List<GymDayDTO> getAllGymDays();
+    GymDayDTO getGymDayById(Long id);
+    GymDayDTO updateGymDay(GymDayDTO gymDayDTO);
+    List<GymDayDTO> getGymDaysByUserId(Long userId);
     void deleteGymDay(Long id);
     void addExerciseToGymDay(Long gymDayId, Long exerciseId);
 }

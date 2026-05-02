@@ -1,5 +1,7 @@
 package com.gymbuddy.backend.service.impl;
 
+import com.gymbuddy.backend.dto.GymDayDTO;
+import com.gymbuddy.backend.mapper.GymDayMapper;
 import com.gymbuddy.backend.model.*;
 import com.gymbuddy.backend.repository.*;
 import com.gymbuddy.backend.service.MockDataService;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class MockDataServiceImpl implements MockDataService {
@@ -24,28 +27,34 @@ public class MockDataServiceImpl implements MockDataService {
     private final ExerciseSetRepository exerciseSetRepository;
     private final ExerciseTypeRepository exerciseTypeRepository;
     private final WeightLogRepository weightLogRepository;
+    private final GymDayMapper gymDayMapper;
 
     public MockDataServiceImpl(UserRepository userRepository,
                                GymDayRepository gymDayRepository,
                                ExerciseRepository exerciseRepository,
                                ExerciseSetRepository exerciseSetRepository,
                                ExerciseTypeRepository exerciseTypeRepository,
-                               WeightLogRepository weightLogRepository) {
+                               WeightLogRepository weightLogRepository,
+                               GymDayMapper gymDayMapper) {
         this.userRepository = userRepository;
         this.gymDayRepository = gymDayRepository;
         this.exerciseRepository = exerciseRepository;
         this.exerciseSetRepository = exerciseSetRepository;
         this.exerciseTypeRepository = exerciseTypeRepository;
         this.weightLogRepository = weightLogRepository;
+        this.gymDayMapper = gymDayMapper;
     }
 
     @PostConstruct
-    @Transactional
-    public void init() {
-        if (userRepository.count() == 0) {
-            generateMockData();
-        }
+    ...
+    @Override
+    public List<GymDayDTO> getGymDays() {
+        return gymDayRepository.findAll().stream()
+                .map(gymDayMapper::toDTO)
+                .collect(Collectors.toList());
     }
+    }
+
 
     @Override
     @Transactional

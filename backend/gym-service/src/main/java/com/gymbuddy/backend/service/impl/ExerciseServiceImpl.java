@@ -1,5 +1,8 @@
 package com.gymbuddy.backend.service.impl;
 
+import com.gymbuddy.backend.dto.ExerciseDTO;
+import com.gymbuddy.backend.exception.ResourceNotFoundException;
+import com.gymbuddy.backend.mapper.ExerciseMapper;
 import com.gymbuddy.backend.model.Exercise;
 import com.gymbuddy.backend.model.ExerciseSet;
 import com.gymbuddy.backend.repository.ExerciseRepository;
@@ -9,53 +12,66 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class ExerciseServiceImpl implements ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
     private final ExerciseSetRepository exerciseSetRepository;
+    private final ExerciseMapper exerciseMapper;
 
-    public ExerciseServiceImpl(ExerciseRepository exerciseRepository, ExerciseSetRepository exerciseSetRepository) {
+    public ExerciseServiceImpl(ExerciseRepository exerciseRepository, 
+                               ExerciseSetRepository exerciseSetRepository, 
+                               ExerciseMapper exerciseMapper) {
         this.exerciseRepository = exerciseRepository;
         this.exerciseSetRepository = exerciseSetRepository;
+        this.exerciseMapper = exerciseMapper;
     }
 
     @Override
-    public Exercise addExercise(Exercise exercise) {
-        return exerciseRepository.save(exercise);
+    public ExerciseDTO addExercise(ExerciseDTO exerciseDTO) {
+        Exercise exercise = exerciseMapper.toEntity(exerciseDTO);
+        return exerciseMapper.toDTO(exerciseRepository.save(exercise));
     }
 
     @Override
-    public List<Exercise> getAllExercises() {
-        return exerciseRepository.findAll();
+    public List<ExerciseDTO> getAllExercises() {
+        return exerciseRepository.findAll().stream()
+                .map(exerciseMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Exercise getExerciseById(Long id) {
-        return exerciseRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Exercise with id " + id + " not found"));
+    public ExerciseDTO getExerciseById(Long id) {
+        Exercise exercise = exerciseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", id));
+        return exerciseMapper.toDTO(exercise);
     }
 
     @Override
-    public Exercise updateExercise(Exercise exercise) {
-        if (!exerciseRepository.existsById(exercise.getId())) {
-            throw new NoSuchElementException("Exercise with id " + exercise.getId() + " not found");
+    public ExerciseDTO updateExercise(ExerciseDTO exerciseDTO) {
+        if (!exerciseRepository.existsById(exerciseDTO.getId())) {
+            throw new ResourceNotFoundException("Exercise", "id", exerciseDTO.getId());
         }
-        return exerciseRepository.save(exercise);
+        Exercise exercise = exerciseMapper.toEntity(exerciseDTO);
+        return exerciseMapper.toDTO(exerciseRepository.save(exercise));
     }
 
     @Override
     public void deleteExercise(Long id) {
+        if (!exerciseRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Exercise", "id", id);
+        }
         exerciseRepository.deleteById(id);
     }
 
     @Override
     public void addSetToExercise(Long exerciseId, Long setId) {
-        Exercise exercise = getExerciseById(exerciseId);
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", exerciseId));
         ExerciseSet set = exerciseSetRepository.findById(setId)
-                .orElseThrow(() -> new NoSuchElementException("ExerciseSet with id " + setId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("ExerciseSet", "id", setId));
         
         if (exercise.getSets() == null) {
             exercise.setSets(new ArrayList<>());
