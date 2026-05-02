@@ -115,6 +115,7 @@ const Dashboard: React.FC = () => {
                   </>
                 )}
             </Stack>
+            <Button variant="contained" color="primary" onClick={() => navigate('/workout/new')}>Log New Workout</Button>
             <Button variant="outlined" color="error" onClick={handleLogout}>Logout</Button>
         </Box>
       </Box>
@@ -126,6 +127,15 @@ const Dashboard: React.FC = () => {
           <div key={workout.id} className="card">
             <div className="gym-day-header">
               <h2>{workout.name}</h2>
+              <Box>
+                <Button size="small" onClick={() => navigate(`/workout/${workout.id}`)}>Edit</Button>
+                <Button size="small" color="error" onClick={async () => {
+                  if (window.confirm("Delete this workout log?")) {
+                    await axios.delete(`/api/gymdays/${workout.id}`);
+                    window.location.reload();
+                  }
+                }}>Delete</Button>
+              </Box>
               <span className="date">{new Date(workout.date).toLocaleDateString()}</span>
             </div>
             

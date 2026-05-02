@@ -4,6 +4,7 @@ import Login from './features/Login';
 import Register from './features/Register';
 import ForgotPassword from './features/ForgotPassword';
 import Dashboard from './features/Dashboard';
+import WorkoutEditor from './features/WorkoutEditor';
 import AdminUsers from './features/AdminUsers';
 import AdminExercises from './features/AdminExercises';
 import HealthDashboard from './features/HealthDashboard';
@@ -23,6 +24,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/workout/new" 
+          element={
+            <ProtectedRoute>
+              <WorkoutEditor />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/workout/:id" 
+          element={
+            <ProtectedRoute>
+              <WorkoutEditor />
             </ProtectedRoute>
           } 
         />
