@@ -46,15 +46,18 @@ public class MockDataServiceImpl implements MockDataService {
     }
 
     @PostConstruct
-    ...
+    public void init() {
+        if (userRepository.count() == 0) {
+            generateMockData();
+        }
+    }
+
     @Override
     public List<GymDayDTO> getGymDays() {
         return gymDayRepository.findAll().stream()
                 .map(gymDayMapper::toDTO)
                 .collect(Collectors.toList());
     }
-    }
-
 
     @Override
     @Transactional
@@ -138,10 +141,5 @@ public class MockDataServiceImpl implements MockDataService {
             }
             gymDayRepository.save(gymDay);
         }
-    }
-
-    @Override
-    public List<GymDay> getGymDays() {
-        return gymDayRepository.findAll();
     }
 }

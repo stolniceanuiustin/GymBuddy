@@ -13,9 +13,10 @@ import {
 import axios from '../helper/axios';
 import { useNavigate } from 'react-router-dom';
 
-const ForgotPassword: React.FC = () => {
+const ResetPassword: React.FC = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -27,10 +28,11 @@ const ForgotPassword: React.FC = () => {
         setMessage(null);
 
         try {
-            const response = await axios.post(`/api/auth/forgot-password`, null, {
+            const response = await axios.post(`/api/auth/reset-password`, null, {
                 params: {
                     username: username,
                     email: email,
+                    oldPassword: oldPassword,
                     newPassword: newPassword
                 }
             });
@@ -43,7 +45,7 @@ const ForgotPassword: React.FC = () => {
             }
         } catch (err: any) {
             console.error('Reset error:', err);
-            setError('Invalid username or email');
+            setError('Invalid details provided. Please check your username, email, and old password.');
         }
     };
 
@@ -57,7 +59,7 @@ const ForgotPassword: React.FC = () => {
                                 Reset Password
                             </Typography>
                             <Typography variant="body1" align="center" color="textSecondary" mb={3}>
-                                Enter your details to reset your password.
+                                Enter your details and old password to reset it.
                             </Typography>
 
                             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -81,6 +83,16 @@ const ForgotPassword: React.FC = () => {
                                     margin="normal"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                                <TextField
+                                    label="Old Password"
+                                    type="password"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    value={oldPassword}
+                                    onChange={(e) => setOldPassword(e.target.value)}
                                     required
                                 />
                                 <TextField
@@ -121,4 +133,4 @@ const ForgotPassword: React.FC = () => {
     );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

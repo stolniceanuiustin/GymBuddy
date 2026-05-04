@@ -5,7 +5,10 @@ import com.gymbuddy.backend.exception.ResourceNotFoundException;
 import com.gymbuddy.backend.exception.ValidationException;
 import com.gymbuddy.backend.mapper.ExerciseSetMapper;
 import com.gymbuddy.backend.model.ExerciseSet;
+import com.gymbuddy.backend.repository.ExerciseRepository;
 import com.gymbuddy.backend.repository.ExerciseSetRepository;
+import com.gymbuddy.backend.repository.GymDayRepository;
+import com.gymbuddy.backend.service.AchievementService;
 import com.gymbuddy.backend.service.ExerciseSetService;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +19,20 @@ import java.util.stream.Collectors;
 public class ExerciseSetServiceImpl implements ExerciseSetService {
 
     private final ExerciseSetRepository exerciseSetRepository;
+    private final ExerciseRepository exerciseRepository;
+    private final GymDayRepository gymDayRepository;
+    private final AchievementService achievementService;
     private final ExerciseSetMapper exerciseSetMapper;
 
-    public ExerciseSetServiceImpl(ExerciseSetRepository exerciseSetRepository, ExerciseSetMapper exerciseSetMapper) {
+    public ExerciseSetServiceImpl(ExerciseSetRepository exerciseSetRepository, 
+                                 ExerciseRepository exerciseRepository,
+                                 GymDayRepository gymDayRepository,
+                                 AchievementService achievementService,
+                                 ExerciseSetMapper exerciseSetMapper) {
         this.exerciseSetRepository = exerciseSetRepository;
+        this.exerciseRepository = exerciseRepository;
+        this.gymDayRepository = gymDayRepository;
+        this.achievementService = achievementService;
         this.exerciseSetMapper = exerciseSetMapper;
     }
 
@@ -51,7 +64,23 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
         }
         validateExerciseSet(exerciseSetDTO);
         ExerciseSet exerciseSet = exerciseSetMapper.toEntity(exerciseSetDTO);
-        return exerciseSetMapper.toDTO(exerciseSetRepository.save(exerciseSet));
+        ExerciseSet savedSet = exerciseSetRepository.save(exerciseSet);
+
+        // Check for achievements
+        exerciseRepository.findBySetId(savedSet.getId()).ifPresent(exercise -> {
+            gymDayRepository.findByExerciseId(exercise.getId()).ifPresent(gymDay -> {
+                if (gymDay.getUser() != null && exercise.getExerciseType() != null) {
+                    achievementService.checkPersonalBest(
+                        gymDay.getUser().getId(),
+                        exercise.getExerciseType().getId(),
+                        exercise.getExerciseType().getName(),
+                        savedSet
+                    );
+                }
+            });
+        });
+
+        return exerciseSetMapper.toDTO(savedSet);
     }
 
     @Override

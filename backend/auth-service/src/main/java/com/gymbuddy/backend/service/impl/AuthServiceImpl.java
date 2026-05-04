@@ -40,9 +40,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean resetPassword(String username, String email, String newPassword) {
+    public boolean resetPassword(String username, String email, String oldPassword, String newPassword) {
         return userRepository.findByUsername(username)
                 .filter(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email))
+                .filter(user -> user.getPassword() != null && user.getPassword().equals(oldPassword))
                 .map(user -> {
                     user.setPassword(newPassword);
                     userRepository.save(user);

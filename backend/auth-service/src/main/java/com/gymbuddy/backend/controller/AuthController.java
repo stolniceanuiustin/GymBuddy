@@ -41,13 +41,13 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/forgot-password")
+    @PostMapping("/reset-password")
     @Operation(summary = "Reset user password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String username, @RequestParam String email, @RequestParam String newPassword) {
-        boolean success = authService.resetPassword(username, email, newPassword);
+    public ResponseEntity<String> resetPassword(@RequestParam String username, @RequestParam String email, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        boolean success = authService.resetPassword(username, email, oldPassword, newPassword);
         if (success) {
             return ResponseEntity.ok("Password reset successfully");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or email");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid details provided");
     }
 }

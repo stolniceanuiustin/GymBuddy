@@ -7,6 +7,8 @@ import com.gymbuddy.backend.model.Exercise;
 import com.gymbuddy.backend.model.ExerciseSet;
 import com.gymbuddy.backend.repository.ExerciseRepository;
 import com.gymbuddy.backend.repository.ExerciseSetRepository;
+import com.gymbuddy.backend.repository.GymDayRepository;
+import com.gymbuddy.backend.service.AchievementService;
 import com.gymbuddy.backend.service.ExerciseService;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +21,19 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
     private final ExerciseSetRepository exerciseSetRepository;
+    private final GymDayRepository gymDayRepository;
+    private final AchievementService achievementService;
     private final ExerciseMapper exerciseMapper;
 
     public ExerciseServiceImpl(ExerciseRepository exerciseRepository, 
-                               ExerciseSetRepository exerciseSetRepository, 
+                               ExerciseSetRepository exerciseSetRepository,
+                               GymDayRepository gymDayRepository,
+                               AchievementService achievementService,
                                ExerciseMapper exerciseMapper) {
         this.exerciseRepository = exerciseRepository;
         this.exerciseSetRepository = exerciseSetRepository;
+        this.gymDayRepository = gymDayRepository;
+        this.achievementService = achievementService;
         this.exerciseMapper = exerciseMapper;
     }
 
@@ -78,5 +86,17 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
         exercise.getSets().add(set);
         exerciseRepository.save(exercise);
+
+        // Check for achievements
+        gymDayRepository.findByExerciseId(exerciseId).ifPresent(gymDay -> {
+            if (gymDay.getUser() != null && exercise.getExerciseType() != null) {
+                achievementService.checkPersonalBest(
+                    gymDay.getUser().getId(),
+                    exercise.getExerciseType().getId(),
+                    exercise.getExerciseType().getName(),
+                    set
+                );
+            }
+        });
     }
 }

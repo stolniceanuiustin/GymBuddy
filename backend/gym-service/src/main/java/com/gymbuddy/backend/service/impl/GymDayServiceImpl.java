@@ -9,6 +9,7 @@ import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.repository.ExerciseRepository;
 import com.gymbuddy.backend.repository.GymDayRepository;
 import com.gymbuddy.backend.repository.UserRepository;
+import com.gymbuddy.backend.service.AchievementService;
 import com.gymbuddy.backend.service.GymDayService;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +23,16 @@ public class GymDayServiceImpl implements GymDayService {
     private final GymDayRepository gymDayRepository;
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
+    private final AchievementService achievementService;
     private final GymDayMapper gymDayMapper;
 
     public GymDayServiceImpl(GymDayRepository gymDayRepository, UserRepository userRepository, 
-                             ExerciseRepository exerciseRepository, GymDayMapper gymDayMapper) {
+                             ExerciseRepository exerciseRepository, AchievementService achievementService,
+                             GymDayMapper gymDayMapper) {
         this.gymDayRepository = gymDayRepository;
         this.userRepository = userRepository;
         this.exerciseRepository = exerciseRepository;
+        this.achievementService = achievementService;
         this.gymDayMapper = gymDayMapper;
     }
 
@@ -41,7 +45,26 @@ public class GymDayServiceImpl implements GymDayService {
                 gymDay.setUser(users.get(0));
             }
         }
-        return gymDayMapper.toDTO(gymDayRepository.save(gymDay));
+        GymDay savedGymDay = gymDayRepository.save(gymDay);
+        checkAchievements(savedGymDay);
+        return gymDayMapper.toDTO(savedGymDay);
+    }
+
+    private void checkAchievements(GymDay gymDay) {
+        if (gymDay.getUser() != null && gymDay.getExercises() != null) {
+            for (Exercise exercise : gymDay.getExercises()) {
+                if (exercise.getExerciseType() != null && exercise.getSets() != null) {
+                    for (ExerciseSet set : exercise.getSets()) {
+                        achievementService.checkPersonalBest(
+                            gymDay.getUser().getId(),
+                            exercise.getExerciseType().getId(),
+                            exercise.getExerciseType().getName(),
+                            set
+                        );
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -71,7 +94,9 @@ public class GymDayServiceImpl implements GymDayService {
             throw new ResourceNotFoundException("GymDay", "id", gymDayDTO.getId());
         }
         GymDay gymDay = gymDayMapper.toEntity(gymDayDTO);
-        return gymDayMapper.toDTO(gymDayRepository.save(gymDay));
+        GymDay savedGymDay = gymDayRepository.save(gymDay);
+        checkAchievements(savedGymDay);
+        return gymDayMapper.toDTO(savedGymDay);
     }
 
     @Override
