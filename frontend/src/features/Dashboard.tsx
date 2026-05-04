@@ -57,7 +57,6 @@ const Dashboard: React.FC = () => {
       .catch(err => {
         console.error("Fetch Error:", err);
         setError("Backend is offline. Showing offline mock data...");
-        // Fallback mock data
         setWorkouts([
           {
             id: 1,
@@ -140,8 +139,8 @@ const Dashboard: React.FC = () => {
             </div>
             
             <div className="gym-day-info">
-              <span>💤 Sleep: {workout.sleepQuality}/10</span>
-              <span>⚡ Energy: {workout.energyLevel}/10</span>
+              <span>Sleep: {workout.sleepQuality}/10</span>
+              <span>Energy: {workout.energyLevel}/10</span>
             </div>
 
             <div className="exercises-list">
@@ -170,7 +169,7 @@ const Dashboard: React.FC = () => {
               ))}
             </div>
 
-            {workout.notes && <div className="notes">" {workout.notes} "</div>}
+            {workout.notes && <div className="notes"> {workout.notes} </div>}
           </div>
         ))}
       </div>

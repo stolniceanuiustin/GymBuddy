@@ -12,12 +12,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
     const location = useLocation();
 
     if (!userId) {
-        // Redirect to login if not authenticated
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     if (requiredRole && role !== requiredRole) {
-        // Redirect to dashboard if they don't have the right role
         return <Navigate to="/dashboard" replace />;
     }
 

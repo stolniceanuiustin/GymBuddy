@@ -22,7 +22,6 @@ const AdminExercises: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [editingExercise, setEditingExercise] = useState<ExerciseType | null>(null);
     
-    // Form State
     const [formData, setFormData] = useState<ExerciseType>({
         name: '',
         description: '',

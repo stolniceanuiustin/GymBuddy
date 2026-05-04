@@ -32,7 +32,6 @@ const AdminUsers: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch users from the gym-service (since it has the full user list)
         axios.get('/api/users')
             .then(response => {
                 setUsers(response.data);

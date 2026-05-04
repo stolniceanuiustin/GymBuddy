@@ -1,8 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import {
+    Container,
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Card,
+    CardContent,
+    Grid,
+    MenuItem,
+    IconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Divider,
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SaveIcon from '@mui/icons-material/Save';
 import axios from '../helper/axios';
 
-// Interfaces matching the backend DTOs for type safety
 interface ExerciseSetDTO {
     id?: number;
     setNumber: number;
@@ -39,7 +62,6 @@ const WorkoutEditor: React.FC = () => {
     const navigate = useNavigate();
     const userId = Number(localStorage.getItem('USER_ID'));
 
-    // State for the entire workout session
     const [workout, setWorkout] = useState<GymDayDTO>({
         name: '',
         date: new Date().toISOString().split('T')[0],
@@ -50,11 +72,9 @@ const WorkoutEditor: React.FC = () => {
         exercises: []
     });
 
-    // State for available exercise types from catalog
     const [catalog, setCatalog] = useState<ExerciseTypeDTO[]>([]);
     const [selectedTypeId, setSelectedTypeId] = useState<string>('');
 
-    // Fetch existing workout if editing, and fetch catalog
     useEffect(() => {
         axios.get('/api/exercise-types').then(res => setCatalog(res.data));
 
@@ -63,13 +83,11 @@ const WorkoutEditor: React.FC = () => {
         }
     }, [id]);
 
-    // Handle simple input changes for the workout metadata
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setWorkout({ ...workout, [name]: name === 'sleepQuality' || name === 'energyLevel' ? Number(value) : value });
     };
 
-    // Add a new exercise to the workout session
     const addExercise = () => {
         if (!selectedTypeId) return;
         const type = catalog.find(t => t.id === Number(selectedTypeId));
@@ -80,15 +98,14 @@ const WorkoutEditor: React.FC = () => {
             sets: []
         };
         setWorkout({ ...workout, exercises: [...workout.exercises, newExercise] });
+        setSelectedTypeId('');
     };
 
-    // Remove an exercise
     const removeExercise = (index: number) => {
         const updatedExercises = workout.exercises.filter((_, i) => i !== index);
         setWorkout({ ...workout, exercises: updatedExercises });
     };
 
-    // Add a set to a specific exercise
     const addSet = (exerciseIndex: number) => {
         const updatedExercises = [...workout.exercises];
         const exercise = updatedExercises[exerciseIndex];
@@ -101,7 +118,6 @@ const WorkoutEditor: React.FC = () => {
         setWorkout({ ...workout, exercises: updatedExercises });
     };
 
-    // Update set data
     const handleSetChange = (exerciseIndex: number, setIndex: number, field: string, value: string) => {
         const updatedExercises = [...workout.exercises];
         const set = updatedExercises[exerciseIndex].sets[setIndex];
@@ -110,11 +126,17 @@ const WorkoutEditor: React.FC = () => {
         setWorkout({ ...workout, exercises: updatedExercises });
     };
 
-    // Save the full workout to the backend
+    const removeSet = (exerciseIndex: number, setIndex: number) => {
+        const updatedExercises = [...workout.exercises];
+        updatedExercises[exerciseIndex].sets.splice(setIndex, 1);
+        updatedExercises[exerciseIndex].sets.forEach((s, i) => s.setNumber = i + 1);
+        setWorkout({ ...workout, exercises: updatedExercises });
+    };
+
     const saveWorkout = async () => {
         try {
             if (workout.id) {
-                await axios.put(`/api/gymdays`, workout); // Our GymDayService handles full update via DTO
+                await axios.put(`/api/gymdays`, workout);
             } else {
                 await axios.post('/api/gymdays', workout);
             }
@@ -126,86 +148,195 @@ const WorkoutEditor: React.FC = () => {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <h1>{workout.id ? 'Edit Workout' : 'Log New Workout'}</h1>
-            <button onClick={() => navigate('/dashboard')}>Back to Dashboard</button>
-            <hr />
+        <Container maxWidth="md" sx={{ py: 4 }}>
+            <Box display="flex" alignItems="center" mb={4}>
+                <IconButton onClick={() => navigate('/dashboard')} sx={{ mr: 2 }}>
+                    <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h4" fontWeight="bold" color="primary">
+                    {workout.id ? 'Edit Workout' : 'Log New Workout'}
+                </Typography>
+            </Box>
 
-            <div>
-                <h3>General Info</h3>
-                <label>Date: </label>
-                <input type="date" name="date" value={workout.date} onChange={handleInputChange} /><br />
-                <label>Workout Name: </label>
-                <input type="text" name="name" value={workout.name} onChange={handleInputChange} placeholder="e.g. Leg Day" /><br />
-                <label>Sleep Quality (1-10): </label>
-                <input type="number" name="sleepQuality" min="1" max="10" value={workout.sleepQuality} onChange={handleInputChange} /><br />
-                <label>Energy Level (1-10): </label>
-                <input type="number" name="energyLevel" min="1" max="10" value={workout.energyLevel} onChange={handleInputChange} /><br />
-                <label>Notes: </label><br />
-                <textarea name="notes" value={workout.notes} onChange={handleInputChange} style={{ width: '100%' }} />
-            </div>
+            <Card sx={{ mb: 4, borderRadius: 3 }} elevation={3}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom fontWeight="bold">General Info</Typography>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                label="Workout Name"
+                                name="name"
+                                value={workout.name}
+                                onChange={handleInputChange}
+                                fullWidth
+                                placeholder="e.g. Leg Day"
+                                required
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                label="Date"
+                                type="date"
+                                name="date"
+                                value={workout.date}
+                                onChange={handleInputChange}
+                                fullWidth
+                                InputLabelProps={{ shrink: true }}
+                                required
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                label="Sleep Quality (1-10)"
+                                type="number"
+                                name="sleepQuality"
+                                value={workout.sleepQuality}
+                                onChange={handleInputChange}
+                                fullWidth
+                                inputProps={{ min: 1, max: 10 }}
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                label="Energy Level (1-10)"
+                                type="number"
+                                name="energyLevel"
+                                value={workout.energyLevel}
+                                onChange={handleInputChange}
+                                fullWidth
+                                inputProps={{ min: 1, max: 10 }}
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                            <TextField
+                                label="Notes"
+                                name="notes"
+                                value={workout.notes}
+                                onChange={handleInputChange}
+                                fullWidth
+                                multiline
+                                rows={2}
+                            />
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
 
-            <hr />
-            <div>
-                <h3>Exercises</h3>
-                <select value={selectedTypeId} onChange={(e) => setSelectedTypeId(e.target.value)}>
-                    <option value="">-- Select Exercise --</option>
-                    {catalog.map(type => <option key={type.id} value={type.id}>{type.name}</option>)}
-                </select>
-                <button onClick={addExercise}>Add Exercise</button>
+            <Box mb={4}>
+                <Typography variant="h5" gutterBottom fontWeight="bold" color="primary">Exercises</Typography>
+                <Box display="flex" gap={2} mb={3}>
+                    <TextField
+                        select
+                        label="Add Exercise"
+                        value={selectedTypeId}
+                        onChange={(e) => setSelectedTypeId(e.target.value)}
+                        sx={{ minWidth: 250 }}
+                    >
+                        <MenuItem value=""><em>-- Select --</em></MenuItem>
+                        {catalog.map(type => (
+                            <MenuItem key={type.id} value={type.id}>{type.name}</MenuItem>
+                        ))}
+                    </TextField>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={addExercise}
+                        disabled={!selectedTypeId}
+                    >
+                        Add
+                    </Button>
+                </Box>
 
                 {workout.exercises.map((ex, exIndex) => (
-                    <div key={exIndex} style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <strong>{ex.exerciseType.name}</strong>
-                            <button onClick={() => removeExercise(exIndex)} style={{ color: 'red' }}>Remove Exercise</button>
-                        </div>
-                        
-                        <table style={{ width: '100%', marginTop: '10px' }}>
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Reps</th>
-                                    {!ex.exerciseType.bodyweight && <th>Weight (kg)</th>}
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {ex.sets.map((set, setIndex) => (
-                                    <tr key={setIndex}>
-                                        <td>{set.setNumber}</td>
-                                        <td>
-                                            <input type="number" value={set.reps} onChange={(e) => handleSetChange(exIndex, setIndex, 'reps', e.target.value)} />
-                                        </td>
-                                        {!ex.exerciseType.bodyweight && (
-                                            <td>
-                                                <input type="number" value={set.weight || ''} onChange={(e) => handleSetChange(exIndex, setIndex, 'weight', e.target.value)} />
-                                            </td>
-                                        )}
-                                        <td><button onClick={() => {
-                                            const updated = [...workout.exercises];
-                                            updated[exIndex].sets.splice(setIndex, 1);
-                                            setWorkout({ ...workout, exercises: updated });
-                                        }}>Remove Set</button></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <button onClick={() => addSet(exIndex)}>+ Add Set</button>
-                    </div>
+                    <Card key={exIndex} sx={{ mb: 3, borderRadius: 2, border: '1px solid #e0e0e0' }} elevation={1}>
+                        <CardContent>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                <Typography variant="h6" fontWeight="bold">{ex.exerciseType.name}</Typography>
+                                <IconButton color="error" onClick={() => removeExercise(exIndex)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
+                            
+                            <TableContainer component={Paper} variant="outlined" sx={{ mb: 2 }}>
+                                <Table size="small">
+                                    <TableHead sx={{ bgcolor: '#f5f5f5' }}>
+                                        <TableRow>
+                                            <TableCell width="10%">Set</TableCell>
+                                            <TableCell width="30%">Reps</TableCell>
+                                            {!ex.exerciseType.bodyweight && <TableCell width="30%">Weight (kg)</TableCell>}
+                                            <TableCell width="10%" align="right">Action</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {ex.sets.map((set, setIndex) => (
+                                            <TableRow key={setIndex}>
+                                                <TableCell>{set.setNumber}</TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        size="small"
+                                                        type="number"
+                                                        value={set.reps}
+                                                        onChange={(e) => handleSetChange(exIndex, setIndex, 'reps', e.target.value)}
+                                                        fullWidth
+                                                    />
+                                                </TableCell>
+                                                {!ex.exerciseType.bodyweight && (
+                                                    <TableCell>
+                                                        <TextField
+                                                            size="small"
+                                                            type="number"
+                                                            value={set.weight || ''}
+                                                            onChange={(e) => handleSetChange(exIndex, setIndex, 'weight', e.target.value)}
+                                                            fullWidth
+                                                        />
+                                                    </TableCell>
+                                                )}
+                                                <TableCell align="right">
+                                                    <IconButton size="small" color="error" onClick={() => removeSet(exIndex, setIndex)}>
+                                                        <DeleteIcon fontSize="small" />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <Button
+                                size="small"
+                                startIcon={<AddIcon />}
+                                onClick={() => addSet(exIndex)}
+                                variant="outlined"
+                            >
+                                Add Set
+                            </Button>
+                        </CardContent>
+                    </Card>
                 ))}
-            </div>
+            </Box>
 
-            <hr />
-            <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                <button onClick={saveWorkout} style={{ padding: '10px 20px', backgroundColor: '#3498db', color: 'white', border: 'none' }}>
-                    SAVE WORKOUT
-                </button>
-                <button onClick={() => navigate('/dashboard')} style={{ padding: '10px 20px' }}>
+            <Divider sx={{ my: 4 }} />
+
+            <Box display="flex" gap={2} justifyContent="center">
+                <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick={saveWorkout}
+                    sx={{ px: 4, py: 1.5 }}
+                >
+                    Save Workout
+                </Button>
+                <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => navigate('/dashboard')}
+                    sx={{ px: 4, py: 1.5 }}
+                >
                     Cancel
-                </button>
-            </div>
-        </div>
+                </Button>
+            </Box>
+        </Container>
     );
 };
 

@@ -2,11 +2,9 @@ import axios from 'axios';
 
 const getBaseURL = () => {
     const path = window.location.pathname;
-    // If we are on the login page, register page, or reset password, talk to the Auth Service (8082)
     if (path.includes("login") || path.includes("register") || path.includes("reset-password")) {
         return "http://localhost:8082";
     }
-    // Otherwise, talk to the Main Service (8080)
     return "http://localhost:8080";
 };
 
@@ -18,7 +16,6 @@ const axiosInstance = axios.create({
     }
 });
 
-// Update baseURL and headers on each request
 axiosInstance.interceptors.request.use((config) => {
     config.baseURL = getBaseURL();
     

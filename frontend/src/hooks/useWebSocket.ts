@@ -41,7 +41,6 @@ export const useWebSocket = (topic: string) => {
                         console.log('Disconnected from WebSocket');
                     });
                 } catch (e) {
-                    // Silently catch disconnect errors to prevent app crash
                 }
             }
         };
