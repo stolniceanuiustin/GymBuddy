@@ -161,7 +161,7 @@ const HealthDashboard: React.FC = () => {
 
       <Grid container spacing={4}>
         {/* Stats Section */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
             <CardContent>
               <Typography variant="overline" color="textSecondary" fontWeight="bold">Current Weight</Typography>
@@ -177,7 +177,7 @@ const HealthDashboard: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
             <CardContent>
               <Typography variant="overline" color="textSecondary" fontWeight="bold">BMI Score</Typography>
@@ -188,7 +188,7 @@ const HealthDashboard: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={3} sx={{ height: '100%', borderRadius: 3 }}>
             <CardContent>
               <Typography variant="overline" color="textSecondary" fontWeight="bold">Log New Weight</Typography>
@@ -203,18 +203,18 @@ const HealthDashboard: React.FC = () => {
         </Grid>
 
         {isEditing && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Paper sx={{ p: 3, borderRadius: 3, bgcolor: '#e3f2fd' }}>
               <Typography variant="h6" gutterBottom fontWeight="bold">Update Physical Profile</Typography>
               <form onSubmit={handleProfileUpdate}>
                 <Grid container spacing={2} alignItems="flex-end">
-                  <Grid item xs={12} sm={4}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField label="Height (cm)" type="number" value={newHeight} onChange={(e) => setNewHeight(e.target.value)} fullWidth sx={{ bgcolor: 'white' }} />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField label="Age" type="number" value={newAge} onChange={(e) => setNewAge(e.target.value)} fullWidth sx={{ bgcolor: 'white' }} />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ height: 56 }}>Save Profile</Button>
                   </Grid>
                 </Grid>
@@ -223,7 +223,7 @@ const HealthDashboard: React.FC = () => {
           </Grid>
         )}
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
             <Typography variant="h5" fontWeight="bold" gutterBottom>Weight Journey</Typography>
             <Box sx={{ width: '100%', height: 350, mt: 4 }}>
@@ -240,7 +240,7 @@ const HealthDashboard: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 3 }}>
             <Box p={3} pb={2}><Typography variant="h6" fontWeight="bold">Recent Logs</Typography></Box>
             <Table>

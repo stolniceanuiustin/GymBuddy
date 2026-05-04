@@ -56,8 +56,6 @@ const WorkoutEditor: React.FC = () => {
 
     // Fetch existing workout if editing, and fetch catalog
     useEffect(() => {
-        axios.get('/api/exercise-types').then(res => setCatalog(response => response.data || res.data)); // Handling possible axios interceptor differences
-        // The above was a bit weird, let's stick to standard res.data
         axios.get('/api/exercise-types').then(res => setCatalog(res.data));
 
         if (id) {
@@ -121,8 +119,9 @@ const WorkoutEditor: React.FC = () => {
                 await axios.post('/api/gymdays', workout);
             }
             navigate('/dashboard');
-        } catch (err) {
-            alert('Error saving workout. Make sure all fields are valid.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.message || 'Error saving workout. Make sure all fields are valid.';
+            alert(errorMsg);
         }
     };
 

@@ -6,22 +6,43 @@ export const useWebSocket = (topic: string) => {
     const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/socket');
-        const stompClient = Stomp.over(socket);
-        // Disable debug logging to keep console clean
-        stompClient.debug = () => {};
+        let stompClient: Stomp.Client | null = null;
+        let isMounted = true;
 
-        stompClient.connect({}, () => {
-            stompClient.subscribe(topic, (sdkEvent) => {
-                setMessage(sdkEvent.body);
-            });
-        }, (error) => {
-            console.error('WebSocket Error:', error);
-        });
+        const connect = () => {
+            try {
+                const socket = new SockJS('http://localhost:8080/socket');
+                stompClient = Stomp.over(socket);
+                stompClient.debug = () => {};
+
+                stompClient.connect({}, () => {
+                    if (isMounted && stompClient) {
+                        stompClient.subscribe(topic, (sdkEvent) => {
+                            if (isMounted) setMessage(sdkEvent.body);
+                        });
+                    }
+                }, (error) => {
+                    if (isMounted) {
+                        console.warn('WebSocket connection failed, will not retry automatically:', error);
+                    }
+                });
+            } catch (err) {
+                console.error('Failed to initialize WebSocket:', err);
+            }
+        };
+
+        connect();
 
         return () => {
-            if (stompClient) {
-                stompClient.disconnect(() => {});
+            isMounted = false;
+            if (stompClient && stompClient.connected) {
+                try {
+                    stompClient.disconnect(() => {
+                        console.log('Disconnected from WebSocket');
+                    });
+                } catch (e) {
+                    // Silently catch disconnect errors to prevent app crash
+                }
             }
         };
     }, [topic]);
