@@ -2,6 +2,7 @@ package com.gymbuddy.backend.service.impl;
 
 import com.gymbuddy.backend.dto.GymDayDTO;
 import com.gymbuddy.backend.exception.ResourceNotFoundException;
+import com.gymbuddy.backend.exception.ValidationException;
 import com.gymbuddy.backend.mapper.GymDayMapper;
 import com.gymbuddy.backend.model.Exercise;
 import com.gymbuddy.backend.model.ExerciseSet;
@@ -41,6 +42,7 @@ public class GymDayServiceImpl implements GymDayService {
     @Override
     @Transactional
     public GymDayDTO addGymDay(GymDayDTO gymDayDTO) {
+        validateGymDay(gymDayDTO);
         GymDay gymDay = gymDayMapper.toEntity(gymDayDTO);
         if (gymDay.getUser() == null) {
             List<User> users = userRepository.findAll();
@@ -51,6 +53,24 @@ public class GymDayServiceImpl implements GymDayService {
         GymDay savedGymDay = gymDayRepository.save(gymDay);
         checkAchievements(savedGymDay);
         return gymDayMapper.toDTO(savedGymDay);
+    }
+
+    private void validateGymDay(GymDayDTO dto) {
+        if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+            throw new ValidationException("Workout name is required.");
+        }
+        if (dto.getDate() == null) {
+            throw new ValidationException("Workout date is required.");
+        }
+        if (dto.getSleepQuality() < 1 || dto.getSleepQuality() > 10) {
+            throw new ValidationException("Sleep quality must be between 1 and 10.");
+        }
+        if (dto.getEnergyLevel() < 1 || dto.getEnergyLevel() > 10) {
+            throw new ValidationException("Energy level must be between 1 and 10.");
+        }
+        if (dto.getExercises() == null || dto.getExercises().isEmpty()) {
+            throw new ValidationException("A workout must contain at least one exercise.");
+        }
     }
 
     private void checkAchievements(GymDay gymDay) {
@@ -94,6 +114,7 @@ public class GymDayServiceImpl implements GymDayService {
     @Override
     @Transactional
     public GymDayDTO updateGymDay(GymDayDTO gymDayDTO) {
+        validateGymDay(gymDayDTO);
         if (!gymDayRepository.existsById(gymDayDTO.getId())) {
             throw new ResourceNotFoundException("GymDay", "id", gymDayDTO.getId());
         }
