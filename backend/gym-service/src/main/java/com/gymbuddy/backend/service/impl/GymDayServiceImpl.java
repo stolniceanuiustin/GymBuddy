@@ -4,6 +4,7 @@ import com.gymbuddy.backend.dto.GymDayDTO;
 import com.gymbuddy.backend.exception.ResourceNotFoundException;
 import com.gymbuddy.backend.mapper.GymDayMapper;
 import com.gymbuddy.backend.model.Exercise;
+import com.gymbuddy.backend.model.ExerciseSet;
 import com.gymbuddy.backend.model.GymDay;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.repository.ExerciseRepository;
@@ -12,6 +13,7 @@ import com.gymbuddy.backend.repository.UserRepository;
 import com.gymbuddy.backend.service.AchievementService;
 import com.gymbuddy.backend.service.GymDayService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ public class GymDayServiceImpl implements GymDayService {
     }
 
     @Override
+    @Transactional
     public GymDayDTO addGymDay(GymDayDTO gymDayDTO) {
         GymDay gymDay = gymDayMapper.toEntity(gymDayDTO);
         if (gymDay.getUser() == null) {
@@ -89,6 +92,7 @@ public class GymDayServiceImpl implements GymDayService {
     }
 
     @Override
+    @Transactional
     public GymDayDTO updateGymDay(GymDayDTO gymDayDTO) {
         if (!gymDayRepository.existsById(gymDayDTO.getId())) {
             throw new ResourceNotFoundException("GymDay", "id", gymDayDTO.getId());
