@@ -87,7 +87,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         exercise.getSets().add(set);
         exerciseRepository.save(exercise);
 
-        // Check for achievements
         gymDayRepository.findByExerciseId(exerciseId).ifPresent(gymDay -> {
             if (gymDay.getUser() != null && exercise.getExerciseType() != null) {
                 achievementService.checkPersonalBest(

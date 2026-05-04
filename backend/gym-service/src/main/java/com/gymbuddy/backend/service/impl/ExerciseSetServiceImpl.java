@@ -66,7 +66,6 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
         ExerciseSet exerciseSet = exerciseSetMapper.toEntity(exerciseSetDTO);
         ExerciseSet savedSet = exerciseSetRepository.save(exerciseSet);
 
-        // Check for achievements
         exerciseRepository.findBySetId(savedSet.getId()).ifPresent(exercise -> {
             gymDayRepository.findByExerciseId(exercise.getId()).ifPresent(gymDay -> {
                 if (gymDay.getUser() != null && exercise.getExerciseType() != null) {

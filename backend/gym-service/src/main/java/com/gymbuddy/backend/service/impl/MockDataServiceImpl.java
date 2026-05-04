@@ -62,7 +62,6 @@ public class MockDataServiceImpl implements MockDataService {
     @Override
     @Transactional
     public void generateMockData() {
-        // Create Admin User
         User admin = User.builder()
                 .username("admin")
                 .email("admin@gymbuddy.com")
@@ -71,7 +70,6 @@ public class MockDataServiceImpl implements MockDataService {
                 .build();
         userRepository.save(admin);
 
-        // Create Exercise Catalog
         List<ExerciseType> catalog = new ArrayList<>();
         catalog.add(exerciseTypeRepository.save(ExerciseType.builder()
                 .name("Bench Press").bodyweight(false).description("Chest exercise with weights").build()));
@@ -82,7 +80,6 @@ public class MockDataServiceImpl implements MockDataService {
         catalog.add(exerciseTypeRepository.save(ExerciseType.builder()
                 .name("Push Ups").bodyweight(true).description("Bodyweight chest exercise").build()));
 
-        // Create Gym Pro User
         User mockUser = User.builder()
                 .username("gym_pro")
                 .email("pro@gymbuddy.com")
@@ -94,13 +91,12 @@ public class MockDataServiceImpl implements MockDataService {
                 .build();
         userRepository.save(mockUser);
 
-        // Generate 30 days of weight data for mockUser
         float startingWeight = 90.0f;
         for (int i = 30; i >= 0; i--) {
-            startingWeight -= (random.nextFloat() * 0.2f); // slight trend down
+            startingWeight -= (random.nextFloat() * 0.2f);
             weightLogRepository.save(WeightLog.builder()
                     .date(LocalDate.now().minusDays(i))
-                    .weight(startingWeight + (random.nextFloat() * 0.5f)) // add some noise
+                    .weight(startingWeight + (random.nextFloat() * 0.5f))
                     .user(mockUser)
                     .build());
         }
@@ -116,7 +112,7 @@ public class MockDataServiceImpl implements MockDataService {
                     .energyLevel(random.nextInt(10) + 1)
                     .build();
 
-            int numExercises = random.nextInt(3) + 2; // 2 to 4 exercises
+            int numExercises = random.nextInt(3) + 2;
             for (int j = 1; j <= numExercises; j++) {
                 ExerciseType randomType = catalog.get(random.nextInt(catalog.size()));
                 Exercise exercise = Exercise.builder()
@@ -124,12 +120,12 @@ public class MockDataServiceImpl implements MockDataService {
                         .sets(new ArrayList<>())
                         .build();
 
-                int numSets = random.nextInt(3) + 3; // 3 to 5 sets
+                int numSets = random.nextInt(3) + 3;
                 for (int k = 1; k <= numSets; k++) {
                     Double weight = (randomType.isBodyweight()) ? null : (double) (random.nextInt(10) * 5 + 40);
                     ExerciseSet set = ExerciseSet.builder()
                             .setNumber(k)
-                            .reps(random.nextInt(5) + 8) // 8 to 12 reps
+                            .reps(random.nextInt(5) + 8)
                             .weight(weight)
                             .build();
                     
