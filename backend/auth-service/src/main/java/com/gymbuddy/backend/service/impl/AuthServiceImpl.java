@@ -5,6 +5,7 @@ import com.gymbuddy.backend.model.Role;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.repository.UserRepository;
 import com.gymbuddy.backend.service.AuthService;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User login(String username, String password) {
         return userRepository.findByUsername(username)
-                .filter(user -> user.getPassword() != null && user.getPassword().equals(password))
+                .filter(user -> user.getPassword() != null && BCrypt.checkpw(password, user.getPassword()))
                 .orElse(null);
     }
 
@@ -32,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
-                .password(registerRequest.getPassword())
+                .password(BCrypt.hashpw(registerRequest.getPassword(), BCrypt.gensalt()))
                 .role(Role.STANDARD_USER)
                 .build();
         
@@ -43,9 +44,9 @@ public class AuthServiceImpl implements AuthService {
     public boolean resetPassword(String username, String email, String oldPassword, String newPassword) {
         return userRepository.findByUsername(username)
                 .filter(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email))
-                .filter(user -> user.getPassword() != null && user.getPassword().equals(oldPassword))
+                .filter(user -> user.getPassword() != null && BCrypt.checkpw(oldPassword, user.getPassword()))
                 .map(user -> {
-                    user.setPassword(newPassword);
+                    user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
                     userRepository.save(user);
                     return true;
                 })

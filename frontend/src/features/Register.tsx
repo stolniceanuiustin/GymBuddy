@@ -19,17 +19,27 @@ const Register: React.FC = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
+
+    const validate = () => {
+        const errors: Record<string, string> = {};
+        if (username.length < 3) errors.username = 'Username must be at least 3 characters';
+        if (!email.includes('@')) errors.email = 'Invalid email address';
+        if (password.length < 6) errors.password = 'Password must be at least 6 characters';
+        if (password !== confirmPassword) errors.confirmPassword = 'Passwords do not match';
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setFieldErrors({});
 
-        if (password !== confirmPassword) {
-            setError("Passwords do not match");
-            return;
-        }
+        if (!validate()) return;
 
         try {
             const response = await axios.post(`/api/auth/register`, {
@@ -46,7 +56,11 @@ const Register: React.FC = () => {
             }
         } catch (err: any) {
             console.error('Registration error:', err);
-            setError(err.response?.data || 'Failed to register. Username or email might be taken.');
+            if (typeof err.response?.data === 'object') {
+                setFieldErrors(err.response.data);
+            } else {
+                setError(err.response?.data || 'Failed to register.');
+            }
         }
     };
 
@@ -74,6 +88,8 @@ const Register: React.FC = () => {
                                     margin="normal"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
+                                    error={!!fieldErrors.username}
+                                    helperText={fieldErrors.username}
                                     required
                                 />
                                 <TextField
@@ -84,6 +100,8 @@ const Register: React.FC = () => {
                                     margin="normal"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    error={!!fieldErrors.email}
+                                    helperText={fieldErrors.email}
                                     required
                                 />
                                 <TextField
@@ -94,6 +112,8 @@ const Register: React.FC = () => {
                                     margin="normal"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    error={!!fieldErrors.password}
+                                    helperText={fieldErrors.password}
                                     required
                                 />
                                 <TextField
@@ -104,6 +124,8 @@ const Register: React.FC = () => {
                                     margin="normal"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
+                                    error={!!fieldErrors.confirmPassword}
+                                    helperText={fieldErrors.confirmPassword}
                                     required
                                 />
                                 <Button
