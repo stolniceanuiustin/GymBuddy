@@ -10,6 +10,10 @@
 ### 1. Workout tracking(functia primara a aplicatiei)
 ### 2. Notificari cu achievmenturi cannd atingi un nou PR la un exercitiu 
 
+# Featrues pentru proiect: 
+### Raport XML Cu toate zilele la sala 
+### Integrare model ML care estimeaza bodyfat-ul. 
+
 How to start:
 to start the database
 docker compose up -d 
