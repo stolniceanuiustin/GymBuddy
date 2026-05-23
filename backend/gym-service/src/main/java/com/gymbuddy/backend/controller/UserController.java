@@ -64,6 +64,11 @@ public class UserController {
         user.setWeight(profileData.getWeight());
         user.setHeight(profileData.getHeight());
         user.setAge(profileData.getAge());
+        user.setGender(profileData.getGender());
+        user.setWaist(profileData.getWaist());
+        user.setHip(profileData.getHip());
+        user.setThigh(profileData.getThigh());
+        user.setArm(profileData.getArm());
         return ResponseEntity.ok(userService.updateUser(user));
     }
 

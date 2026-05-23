@@ -106,6 +106,26 @@ const Dashboard: React.FC = () => {
         <Box display="flex" alignItems="center" gap={2}>
             <Typography variant="h6">Welcome, {username}!</Typography>
             <Stack direction="row" spacing={2}>
+                <Button 
+                  variant="contained" 
+                  color="warning" 
+                  onClick={async () => {
+                    try {
+                      const response = await axios.get(`/api/gymdays/user/${userId}/export`, { responseType: 'blob' });
+                      const url = window.URL.createObjectURL(new Blob([response.data]));
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.setAttribute('download', 'gym_history.xml');
+                      document.body.appendChild(link);
+                      link.click();
+                      link.remove();
+                    } catch (err) {
+                      alert("Failed to export XML");
+                    }
+                  }}
+                >
+                  Export XML
+                </Button>
                 <Button variant="contained" color="info" onClick={() => navigate('/health')}>Health Dashboard</Button>
                 {role === 'ADMINISTRATOR' && (
                   <>

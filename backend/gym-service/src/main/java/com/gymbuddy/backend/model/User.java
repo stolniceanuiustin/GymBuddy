@@ -50,4 +50,20 @@ public class User {
 
     @Schema(description = "Weight of the user in kg", example = "75.0")
     private Float weight;
+
+    @Enumerated(EnumType.STRING)
+    @Schema(description = "Gender of the user")
+    private Gender gender;
+
+    @Schema(description = "Waist measurement in cm", example = "80.0")
+    private Float waist;
+
+    @Schema(description = "Hip measurement in cm", example = "95.0")
+    private Float hip;
+
+    @Schema(description = "Thigh measurement in cm", example = "55.0")
+    private Float thigh;
+
+    @Schema(description = "Arm measurement in cm", example = "35.0")
+    private Float arm;
 }

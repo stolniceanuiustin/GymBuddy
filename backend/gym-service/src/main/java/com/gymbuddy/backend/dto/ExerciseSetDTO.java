@@ -2,6 +2,9 @@ package com.gymbuddy.backend.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
 
 @Data
@@ -10,6 +13,8 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@XmlRootElement(name = "Set")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ExerciseSetDTO {
     private Long id;
 

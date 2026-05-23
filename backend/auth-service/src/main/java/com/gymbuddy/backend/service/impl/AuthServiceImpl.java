@@ -5,22 +5,24 @@ import com.gymbuddy.backend.model.Role;
 import com.gymbuddy.backend.model.User;
 import com.gymbuddy.backend.repository.UserRepository;
 import com.gymbuddy.backend.service.AuthService;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserRepository userRepository) {
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public User login(String username, String password) {
         return userRepository.findByUsername(username)
-                .filter(user -> user.getPassword() != null && BCrypt.checkpw(password, user.getPassword()))
+                .filter(user -> user.getPassword() != null && passwordEncoder.matches(password, user.getPassword()))
                 .orElse(null);
     }
 
@@ -33,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
-                .password(BCrypt.hashpw(registerRequest.getPassword(), BCrypt.gensalt()))
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(Role.STANDARD_USER)
                 .build();
         
@@ -44,9 +46,9 @@ public class AuthServiceImpl implements AuthService {
     public boolean resetPassword(String username, String email, String oldPassword, String newPassword) {
         return userRepository.findByUsername(username)
                 .filter(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email))
-                .filter(user -> user.getPassword() != null && BCrypt.checkpw(oldPassword, user.getPassword()))
+                .filter(user -> user.getPassword() != null && passwordEncoder.matches(oldPassword, user.getPassword()))
                 .map(user -> {
-                    user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+                    user.setPassword(passwordEncoder.encode(newPassword));
                     userRepository.save(user);
                     return true;
                 })

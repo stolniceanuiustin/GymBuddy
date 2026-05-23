@@ -2,8 +2,8 @@ package com.gymbuddy.backend.controller;
 
 import com.gymbuddy.backend.dto.GymDayDTO;
 import com.gymbuddy.backend.dto.WorkoutExportDTO;
-import com.gymbuddy.backend.report.Report;
-import com.gymbuddy.backend.report.ReportFactory;
+import com.gymbuddy.backend.exporter.FileExporter;
+import com.gymbuddy.backend.exporter.XMLFileExporter;
 import com.gymbuddy.backend.service.GymDayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,17 +63,23 @@ public class GymDayController {
     }
 
     @GetMapping("/user/{userId}/export")
-    @Operation(summary = "Export workout history for a user in XML format")
-    public ResponseEntity<String> exportWorkouts(@PathVariable Long userId) {
+    @Operation(summary = "Export workout history for a user")
+    public ResponseEntity<String> exportWorkouts(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "xml") String format) {
+        
         List<GymDayDTO> workouts = gymDayService.getGymDaysByUserId(userId);
         WorkoutExportDTO exportData = new WorkoutExportDTO(workouts);
-        
-        Report xmlReport = ReportFactory.getReport("XML");
-        String xmlContent = xmlReport.generate(exportData);
-        
+
+        FileExporter exporter = com.gymbuddy.backend.exporter.ExporterFactory.getExporter(format);
+        String content = exporter.exportData(exportData);
+
+        MediaType contentType = format.equalsIgnoreCase("xml") ? MediaType.APPLICATION_XML : MediaType.TEXT_PLAIN;
+        String filename = "workout_history." + format.toLowerCase();
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=workout_history.xml")
-                .contentType(MediaType.APPLICATION_XML)
-                .body(xmlContent);
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(contentType)
+                .body(content);
     }
 }
