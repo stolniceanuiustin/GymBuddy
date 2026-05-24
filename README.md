@@ -89,7 +89,7 @@ P1: 9,5
 
 P2: 9
 
-P3: 
+P3: 9
 
 P Implementation: 
 
@@ -97,6 +97,6 @@ P Final Design:
 
 ---------------------------------------
 
-Nota Lab 1: 
+Nota Lab 1: 6,83
 
 Nota Lab 2: 
