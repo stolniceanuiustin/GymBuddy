@@ -97,6 +97,21 @@ const Dashboard: React.FC = () => {
     navigate('/login');
   };
 
+  const handleExport = async (format: 'xml' | 'txt') => {
+    try {
+      const response = await axios.get(`/api/gymdays/user/${userId}/export?format=${format}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `gym_history.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (_err) {
+      alert(`Failed to export ${format.toUpperCase()}`);
+    }
+  };
+
   if (loading) return <div className="loading">Loading your progress...</div>;
 
   return (
@@ -109,22 +124,16 @@ const Dashboard: React.FC = () => {
                 <Button 
                   variant="contained" 
                   color="warning" 
-                  onClick={async () => {
-                    try {
-                      const response = await axios.get(`/api/gymdays/user/${userId}/export`, { responseType: 'blob' });
-                      const url = window.URL.createObjectURL(new Blob([response.data]));
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.setAttribute('download', 'gym_history.xml');
-                      document.body.appendChild(link);
-                      link.click();
-                      link.remove();
-                    } catch (err) {
-                      alert("Failed to export XML");
-                    }
-                  }}
+                  onClick={() => handleExport('xml')}
                 >
                   Export XML
+                </Button>
+                <Button 
+                  variant="contained" 
+                  color="secondary" 
+                  onClick={() => handleExport('txt')}
+                >
+                  Export TXT
                 </Button>
                 <Button variant="contained" color="info" onClick={() => navigate('/health')}>Health Dashboard</Button>
                 {role === 'ADMINISTRATOR' && (
