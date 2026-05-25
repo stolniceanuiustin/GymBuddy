@@ -7,6 +7,8 @@ import com.gymbuddy.backend.repository.*;
 import com.gymbuddy.backend.service.MockDataService;
 import jakarta.annotation.PostConstruct;
 import net.datafaker.Faker;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class MockDataServiceImpl implements MockDataService {
     private final Faker faker = new Faker();
     private final Random random = new Random();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final UserRepository userRepository;
     private final GymDayRepository gymDayRepository;
@@ -47,6 +50,17 @@ public class MockDataServiceImpl implements MockDataService {
 
     @PostConstruct
     public void init() {
+        // Ensure admin2 exists with a hashed password
+        if (userRepository.findByUsername("admin2").isEmpty()) {
+            User admin2 = User.builder()
+                    .username("admin2")
+                    .email("admin2@gymbuddy.com")
+                    .password(passwordEncoder.encode("password123"))
+                    .role(Role.ADMINISTRATOR)
+                    .build();
+            userRepository.save(admin2);
+        }
+
         if (userRepository.count() == 0) {
             generateMockData();
         }
@@ -65,7 +79,7 @@ public class MockDataServiceImpl implements MockDataService {
         User admin = User.builder()
                 .username("admin")
                 .email("admin@gymbuddy.com")
-                .password("password123")
+                .password(passwordEncoder.encode("password123"))
                 .role(Role.ADMINISTRATOR)
                 .build();
         userRepository.save(admin);
@@ -83,7 +97,7 @@ public class MockDataServiceImpl implements MockDataService {
         User mockUser = User.builder()
                 .username("gym_pro")
                 .email("pro@gymbuddy.com")
-                .password("password123")
+                .password(passwordEncoder.encode("password123"))
                 .role(Role.STANDARD_USER)
                 .age(25)
                 .height(180.5f)
