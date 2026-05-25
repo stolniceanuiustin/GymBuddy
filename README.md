@@ -40,23 +40,6 @@ Navigate to the \`frontend\` folder and run:
 npm run dev
 \`\`\`
 
----
-
-# Architecture & Routing Explanation
-
-### 1. User Authentication (Direct Routing)
-The **Auth Service** is called directly from the frontend via Axios. When you login or register, the React app talks directly to port **8082**.
-
-### 2. Gym Data & XML Export (Direct Routing)
-The **Gym Service** (port **8080**) handles workout logging and the XML Export feature. The XML Export uses a **Strategy Pattern** (\`FileExporter\` interface) to generate the file, which is then sent back to the browser as a download blob.
-
-### 3. Body Fat Prediction (Proxy Routing / Backend-to-Backend)
-Unlike the login service, the **Body Fat Service** is NOT called directly by the frontend. 
-- **Routing Flow:** React UI -> Gym Service (8080) -> Body Fat Service (8000).
-- **How it works:** When you click "Predict Body Fat", the Gym Service acts as a proxy. It collects your physical measurements from the database and uses a \`RestTemplate\` to make a POST request to the Python microservice. 
-- **Why this way?** This follows SOLID principles and ensures that your physical data remains secure within the backend network. The Gym Service handles the persistence (saving the log to the DB) and the Python service handles only the math/ML logic.
-
----
 
 # GymBuddy Application
 
@@ -64,7 +47,7 @@ Unlike the login service, the **Body Fat Service** is NOT called directly by the
 The following mock accounts are available for testing (generated on startup):
 
 - **Admin User**
-  - Username: \`admin\`
+  - Username: \`admin2\`
   - Email: \`admin@gymbuddy.com\`
   - Password: \`password123\`
   - Role: \`ADMINISTRATOR\`
